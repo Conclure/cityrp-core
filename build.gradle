@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+group 'me.conclure.cityrp'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+
+    flatDir {
+        dirs 'libs', 'libs/cache'
+    }
+
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    compileOnly 'me.clip:placeholderapi:2.10.10'
+    compileOnly name: 'patched_1.16.5'
+    testCompileOnly name: 'patched_1.16.5'
+    compileOnly 'org.jspecify:jspecify:0.2.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.3'
+
+}
+
+test {
+    useJUnitPlatform()
+}
