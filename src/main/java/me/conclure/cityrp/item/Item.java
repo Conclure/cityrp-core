@@ -234,35 +234,35 @@ public class Item {
 
     public ItemStack newStack(int amount, ItemCreationOptions options) {
         ItemStack stack = new ItemStack(this.material);
-        options.onCreation.accept(this,stack);
+        options.onCreation.run(this,stack);
 
-        if (options.preStackEdit.apply(this,stack) == Boolean.TRUE) {
+        if (!options.preStackEdit.process(false,this,stack)) {
             stack.setAmount(amount);
-            options.postStackEdit.accept(this,stack);
+            options.postStackEdit.run(this,stack);
         }
 
-        if (options.beforeMetaEdit.apply(this,stack) == Boolean.TRUE) {
+        if (!options.beforeMetaEdit.process(false,this,stack)) {
             stack.editMeta(meta -> {
 
-                if (options.preMetaEdit.apply(this,meta) == Boolean.TRUE) {
+                if (!options.preMetaEdit.process(false,this,meta)) {
                     Item.editMeta(meta,this);
-                    options.postMetaEdit.accept(this,meta);
+                    options.postMetaEdit.run(this,meta);
                 }
 
             });
-            options.afterMetaEdit.accept(this,stack);
+            options.afterMetaEdit.run(this,stack);
         }
 
-        if (options.beforeNbtEdit.apply(this,stack) == Boolean.TRUE) {
+        if (!options.beforeNbtEdit.process(false,this,stack)) {
             stack = ItemStackHelper.copyAndEditNbt(stack, tag -> {
 
-                if (options.preNbtEdit.apply(this, tag) == Boolean.TRUE) {
+                if (!options.preNbtEdit.process(false,this, tag)) {
                     tag.setUUID("crp:unstackableId", UUID.randomUUID());
-                    options.postNbtEdit.accept(this, tag);
+                    options.postNbtEdit.run(this, tag);
                 }
 
             });
-            options.afterMetaEdit.accept(this, stack);
+            options.afterMetaEdit.run(this, stack);
         }
 
         return stack;

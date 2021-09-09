@@ -13,6 +13,10 @@ public interface ItemEquialityFilter {
         return (testObject, item) -> this.test(testObject, item) && filter.test(testObject, item);
     }
 
+    default ItemEquialityFilter negate() {
+        return (testObject, item) -> !this.test(testObject,item);
+    }
+
     static ItemEquialityFilter not(ItemEquialityFilter filter) {
         return (testObject, item) -> !filter.test(testObject, item);
     }
