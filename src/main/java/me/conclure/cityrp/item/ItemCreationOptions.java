@@ -1,11 +1,8 @@
 package me.conclure.cityrp.item;
 
-import me.conclure.cityrp.utility.MoreFunctions;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.function.BiConsumer;
 
 public class ItemCreationOptions {
     private static final ItemStackCallback DEFAULT_ITEM_STACK_CALLBACK = (item,stack) -> {};
@@ -149,6 +146,10 @@ public class ItemCreationOptions {
     NbtCallback postNbtEdit = DEFAULT_NBT_CALLBACK;
     ItemStackCallback afterNbtEdit = DEFAULT_ITEM_STACK_CALLBACK;
 
+    public ItemStackCallback getOnCreation() {
+        return this.onCreation;
+    }
+
     public ItemCreationOptions onCreation(ItemStackCallback callback) {
         this.onCreation = callback;
         return this;
@@ -168,6 +169,10 @@ public class ItemCreationOptions {
         }
         this.onCreation = this.onCreation.prepend(callback);
         return this;
+    }
+
+    public ItemStackProcessor getPreStackEdit() {
+        return this.preStackEdit;
     }
 
     public ItemCreationOptions preStackEdit(ItemStackProcessor callback) {
@@ -191,6 +196,10 @@ public class ItemCreationOptions {
         return this;
     }
 
+    public ItemStackCallback getPostStackEdit() {
+        return this.postStackEdit;
+    }
+
     public ItemCreationOptions postStackEdit(ItemStackCallback callback) {
         this.postStackEdit = callback;
         return this;
@@ -210,6 +219,10 @@ public class ItemCreationOptions {
         }
         this.postStackEdit = this.postStackEdit.prepend(callback);
         return this;
+    }
+
+    public ItemStackProcessor getBeforeMetaEdit() {
+        return this.beforeMetaEdit;
     }
 
     public ItemCreationOptions beforeMetaEdit(ItemStackProcessor callback) {
@@ -233,9 +246,17 @@ public class ItemCreationOptions {
         return this;
     }
 
+    public ItemMetaProcessor getPreMetaEdit() {
+        return this.preMetaEdit;
+    }
+
     public ItemCreationOptions preMetaEdit(ItemMetaProcessor callback) {
         this.preMetaEdit = preMetaEdit;
         return this;
+    }
+
+    public ItemMetaCallback getPostMetaEdit() {
+        return this.postMetaEdit;
     }
 
     public ItemCreationOptions postMetaEdit(ItemMetaCallback callback) {
@@ -243,9 +264,17 @@ public class ItemCreationOptions {
         return this;
     }
 
+    public ItemStackCallback getAfterMetaEdit() {
+        return this.afterMetaEdit;
+    }
+
     public ItemCreationOptions afterMetaEdit(ItemStackCallback callback) {
         this.afterMetaEdit = afterMetaEdit;
         return this;
+    }
+
+    public ItemStackProcessor getBeforeNbtEdit() {
+        return this.beforeNbtEdit;
     }
 
     public ItemCreationOptions beforeNbtEdit(ItemStackProcessor callback) {
@@ -253,14 +282,26 @@ public class ItemCreationOptions {
         return this;
     }
 
+    public NbtProcessor getPreNbtEdit() {
+        return this.preNbtEdit;
+    }
+
     public ItemCreationOptions preNbtEdit(NbtProcessor callback) {
         this.preNbtEdit = preNbtEdit;
         return this;
     }
 
+    public NbtCallback getPostNbtEdit() {
+        return this.postNbtEdit;
+    }
+
     public ItemCreationOptions postNbtEdit(NbtCallback callback) {
         this.postNbtEdit = postNbtEdit;
         return this;
+    }
+
+    public ItemStackCallback getAfterNbtEdit() {
+        return this.afterNbtEdit;
     }
 
     public ItemCreationOptions afterNbtEdit(ItemStackCallback callback) {

@@ -1,14 +1,10 @@
 package me.conclure.cityrp.item;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.MoreCollectors;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import me.conclure.cityrp.rarity.Rarities;
-import me.conclure.cityrp.rarity.Rarity;
+import me.conclure.cityrp.item.rarity.Rarities;
+import me.conclure.cityrp.item.rarity.Rarity;
 import me.conclure.cityrp.utility.MoreCollections;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -18,9 +14,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.jspecify.nullness.Nullable;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.function.UnaryOperator;
 
 public class ItemProperties {
@@ -32,25 +25,18 @@ public class ItemProperties {
 
     @Nullable
     Integer customModelData;
-    @Nullable
-    Component displayName;
 
     Component[] lore = new Component[0];
     ItemFlag[] itemFlags = new ItemFlag[0];
     Multimap<Attribute, AttributeModifier> attributes;
     Object2IntMap<Enchantment> enchantments;
 
-    ItemEquialityFilter equialityFilter;
+    ItemEqualityComparator equialityFilter;
     Rarity rarity = Rarities.COMMON;
 
     public ItemProperties() {
         this.attributes = MoreCollections.emptyMultimap();
         this.enchantments = Object2IntMaps.emptyMap();
-    }
-
-    public ItemProperties displayName(Component displayName) {
-        this.displayName = displayName;
-        return this;
     }
 
     public ItemProperties material(Material material) {
@@ -73,9 +59,17 @@ public class ItemProperties {
         return this;
     }
 
+    public ItemProperties unbreakable() {
+        return this.unbreakable(true);
+    }
+
     public ItemProperties unstackable(boolean unstackable) {
         this.isUnstackable = unstackable;
         return this;
+    }
+
+    public ItemProperties unstackable() {
+        return this.unstackable(true);
     }
 
     public ItemProperties lore(Component... components) {
@@ -98,12 +92,12 @@ public class ItemProperties {
         return this;
     }
 
-    public ItemProperties equalityFilter(ItemEquialityFilter equialityFilter) {
+    public ItemProperties equalityFilter(ItemEqualityComparator equialityFilter) {
         this.equialityFilter = equialityFilter;
         return this;
     }
 
-    public ItemProperties editEqualityFilter(UnaryOperator<ItemEquialityFilter> operator) {
+    public ItemProperties editEqualityFilter(UnaryOperator<ItemEqualityComparator> operator) {
         this.equialityFilter = operator.apply(this.equialityFilter);
         return this;
     }

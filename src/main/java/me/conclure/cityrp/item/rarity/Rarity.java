@@ -1,7 +1,6 @@
-package me.conclure.cityrp.rarity;
+package me.conclure.cityrp.item.rarity;
 
 import com.google.common.base.Preconditions;
-import me.conclure.cityrp.registry.Key;
 import net.kyori.adventure.text.format.TextColor;
 
 public class Rarity {
@@ -9,6 +8,7 @@ public class Rarity {
 
     public Rarity(Properties properties) {
         Preconditions.checkNotNull(properties);
+        Preconditions.checkNotNull(properties.color);
 
         this.color = properties.color;
     }
@@ -18,7 +18,7 @@ public class Rarity {
     }
 
     public static class Properties {
-        protected TextColor color;
+        TextColor color;
 
         public Properties color(TextColor color) {
             this.color = color;

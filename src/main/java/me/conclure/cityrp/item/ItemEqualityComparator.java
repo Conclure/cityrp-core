@@ -2,22 +2,22 @@ package me.conclure.cityrp.item;
 
 import org.bukkit.inventory.ItemStack;
 
-public interface ItemEquialityFilter {
+public interface ItemEqualityComparator {
     boolean test(ItemStack testObject, Item item);
 
-    default ItemEquialityFilter or(ItemEquialityFilter filter) {
+    default ItemEqualityComparator or(ItemEqualityComparator filter) {
         return (testObject, item) -> this.test(testObject, item) || filter.test(testObject, item);
     }
 
-    default ItemEquialityFilter and(ItemEquialityFilter filter) {
+    default ItemEqualityComparator and(ItemEqualityComparator filter) {
         return (testObject, item) -> this.test(testObject, item) && filter.test(testObject, item);
     }
 
-    default ItemEquialityFilter negate() {
+    default ItemEqualityComparator negate() {
         return (testObject, item) -> !this.test(testObject,item);
     }
 
-    static ItemEquialityFilter not(ItemEquialityFilter filter) {
+    static ItemEqualityComparator not(ItemEqualityComparator filter) {
         return (testObject, item) -> !filter.test(testObject, item);
     }
 }

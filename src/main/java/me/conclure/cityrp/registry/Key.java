@@ -20,7 +20,7 @@ public final class Key {
     static final Pattern PATTERN;
 
     static {
-        PATTERN = Pattern.compile("[a-z_]");
+        PATTERN = Pattern.compile("[a-z0-9_]+");
     }
 
     private static final KeyPool KEY_POOL = new KeyPool();
@@ -37,9 +37,7 @@ public final class Key {
 
     @Override
     public String toString() {
-        return "Key{" +
-                "key='" + this.key + '\'' +
-                '}';
+        return this.key;
     }
 
     @Override

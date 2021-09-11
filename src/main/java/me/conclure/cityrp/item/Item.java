@@ -3,9 +3,15 @@ package me.conclure.cityrp.item;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import it.unimi.dsi.fastutil.objects.*;
+import me.conclure.cityrp.item.rarity.Rarity;
+import me.conclure.cityrp.registry.Key;
+import me.conclure.cityrp.registry.Registries;
 import me.conclure.cityrp.utility.ItemStackHelper;
 import me.conclure.cityrp.utility.MoreCollections;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -14,7 +20,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.jspecify.nullness.Nullable;
@@ -22,13 +27,6 @@ import org.jspecify.nullness.Nullable;
 import java.util.*;
 
 public class Item {
-    public static final ItemEquialityFilter DEFAULT_FILTER;
-
-    static {
-        DEFAULT_FILTER = (testObject, item) -> {
-            return testObject.getType() == item.material;
-        };
-    }
 
     private final Material material;
     private final boolean isUnstackable;
@@ -37,8 +35,6 @@ public class Item {
 
     @Nullable
     private final Integer customModelData;
-    @Nullable
-    private final Component displayName;
 
     @UnmodifiableView
     @Unmodifiable
@@ -52,22 +48,23 @@ public class Item {
     @UnmodifiableView
     @Unmodifiable
     private final Object2IntMap<Enchantment> enchantments;
+    private final Rarity rarity;
 
     public Item(ItemProperties properties) {
         Preconditions.checkNotNull(properties.material);
         Preconditions.checkArgument(!properties.material.isAir());
-        Preconditions.checkArgument(properties.durability > 0);
+        Preconditions.checkArgument(properties.durability >= 0);
         Preconditions.checkNotNull(properties.lore);
         Preconditions.checkNotNull(properties.itemFlags);
         Preconditions.checkNotNull(properties.attributes);
         Preconditions.checkNotNull(properties.enchantments);
+        Preconditions.checkNotNull(properties.rarity);
 
         this.material = properties.material;
         this.isUnstackable = properties.isUnstackable;
         this.isUnbreakable = properties.isUnbreakable;
         this.durability = properties.durability;
         this.customModelData = properties.customModelData;
-        this.displayName = properties.displayName;
         switch (properties.lore.length) {
             case 0: { this.lore = Collections.emptyList(); break; }
             case 1: { this.lore = Collections.singletonList(properties.lore[0]); break; }
@@ -102,15 +99,17 @@ public class Item {
         } else {
             this.attributes = ImmutableMultimap.copyOf(properties.attributes);
         }
+        this.rarity = properties.rarity;
     }
 
-    @Nullable
-    public Component getDisplayName() {
-        return this.displayName;
+    public Key getKey() {
+        return Preconditions.checkNotNull(Registries.ITEMS.getKey(this));
     }
 
-    public boolean hasDisplayName() {
-        return this.displayName != null;
+    public int getId() {
+        OptionalInt id = Registries.ITEMS.getId(this);
+        Preconditions.checkArgument(id.isPresent());
+        return id.getAsInt();
     }
 
     public boolean isUnstackable() {
@@ -195,9 +194,17 @@ public class Item {
         return this.enchantments.getInt(enchantment);
     }
 
-    private static ItemMeta editMeta(ItemMeta meta, Item item) {
+    public Rarity getRarity() {
+        return this.rarity;
+    }
+
+    static void editMeta(ItemMeta meta, Item item) {
         meta.setCustomModelData(item.customModelData);
-        meta.displayName(item.displayName);
+        meta.displayName(Component.text()
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                .color(item.rarity.getColor())
+                .append(Component.text(item.getKey().toString()))
+                .build());
         meta.setUnbreakable(item.isUnbreakable);
         meta.lore(item.lore);
 
@@ -210,14 +217,19 @@ public class Item {
         }
 
         for (Object2IntMap.Entry<Enchantment> entry : item.enchantments.object2IntEntrySet()) {
-            meta.addEnchant(entry.getKey(),entry.getIntValue(),true);
+            meta.addEnchant(entry.getKey(), entry.getIntValue(), true);
         }
 
         for (Map.Entry<Attribute, AttributeModifier> entry : item.attributes.entries()) {
-            meta.addAttributeModifier(entry.getKey(),entry.getValue());
+            meta.addAttributeModifier(entry.getKey(), entry.getValue());
         }
+    }
 
-        return meta;
+    private static void editNbt(NBTTagCompound tag, Item item) {
+        if (item.isUnstackable) {
+            tag.setUUID("crp:unstackableId", UUID.randomUUID());
+        }
+        tag.setString("crp:key", item.getKey().toString());
     }
 
     public ItemStack newStack(int amount) {
@@ -227,42 +239,42 @@ public class Item {
             Item.editMeta(meta,this);
         });
         stack = ItemStackHelper.copyAndEditNbt(stack, tag -> {
-            tag.setUUID("crp:unstackableId",UUID.randomUUID());
+            Item.editNbt(tag,this);
         });
         return stack;
     }
 
     public ItemStack newStack(int amount, ItemCreationOptions options) {
         ItemStack stack = new ItemStack(this.material);
-        options.onCreation.run(this,stack);
+        options.getOnCreation().run(this,stack);
 
-        if (!options.preStackEdit.process(false,this,stack)) {
+        if (!options.getPreStackEdit().process(false,this,stack)) {
             stack.setAmount(amount);
-            options.postStackEdit.run(this,stack);
+            options.getPostStackEdit().run(this,stack);
         }
 
-        if (!options.beforeMetaEdit.process(false,this,stack)) {
+        if (!options.getBeforeMetaEdit().process(false,this,stack)) {
             stack.editMeta(meta -> {
 
-                if (!options.preMetaEdit.process(false,this,meta)) {
+                if (!options.getPreMetaEdit().process(false,this,meta)) {
                     Item.editMeta(meta,this);
-                    options.postMetaEdit.run(this,meta);
+                    options.getPostMetaEdit().run(this,meta);
                 }
 
             });
-            options.afterMetaEdit.run(this,stack);
+            options.getAfterMetaEdit().run(this,stack);
         }
 
-        if (!options.beforeNbtEdit.process(false,this,stack)) {
+        if (!options.getBeforeNbtEdit().process(false,this,stack)) {
             stack = ItemStackHelper.copyAndEditNbt(stack, tag -> {
 
-                if (!options.preNbtEdit.process(false,this, tag)) {
-                    tag.setUUID("crp:unstackableId", UUID.randomUUID());
-                    options.postNbtEdit.run(this, tag);
+                if (!options.getPreNbtEdit().process(false,this, tag)) {
+                    Item.editNbt(tag,this);
+                    options.getPostNbtEdit().run(this,tag);
                 }
 
             });
-            options.afterMetaEdit.run(this, stack);
+            options.getAfterNbtEdit().run(this, stack);
         }
 
         return stack;

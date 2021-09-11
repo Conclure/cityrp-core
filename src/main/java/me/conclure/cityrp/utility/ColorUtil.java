@@ -1,4 +1,4 @@
-package me.conclure.cityrp;
+package me.conclure.cityrp.utility;
 
 import org.bukkit.ChatColor;
 
