@@ -1,4 +1,4 @@
-package me.conclure.cityrp.utility;
+package me.conclure.cityrp.utility.collections;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;

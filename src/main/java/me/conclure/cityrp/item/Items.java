@@ -7,9 +7,10 @@ import org.bukkit.Material;
 import java.util.function.UnaryOperator;
 
 public class Items {
+
     @Id("bedrock")
     public static final Item BEDROCK;
-    //@Id("repeating_command_block")
+    @Id("repeating_command_block")
     public static final Item REPEATING_COMMAND_BLOCK;
 
     static {

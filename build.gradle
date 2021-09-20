@@ -17,7 +17,7 @@ repositories {
     }
 
     flatDir {
-        dirs 'libs', 'libs/cache'
+        dirs 'libs', 'libs/cache','libs/plugins'
     }
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
 
@@ -28,11 +28,14 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly name: 'patched_1.16.5'
+    compileOnly name: 'HolographicDisplays'
+    compileOnly name: 'RealisticSeasons-4.2'
     testCompileOnly name: 'patched_1.16.5'
     compileOnly 'org.jspecify:jspecify:0.2.0'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.3'
     compileOnly("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT")
     annotationProcessor("org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT")
+    implementation 'org.spongepowered:configurate-jackson:4.1.2'
 
 }
 

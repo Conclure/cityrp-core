@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import me.conclure.cityrp.item.rarity.Rarities;
 import me.conclure.cityrp.item.rarity.Rarity;
-import me.conclure.cityrp.utility.MoreCollections;
+import me.conclure.cityrp.utility.collections.MoreCollections;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -13,8 +13,6 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.jspecify.nullness.Nullable;
-
-import java.util.function.UnaryOperator;
 
 public class ItemProperties {
 
@@ -31,7 +29,6 @@ public class ItemProperties {
     Multimap<Attribute, AttributeModifier> attributes;
     Object2IntMap<Enchantment> enchantments;
 
-    ItemEqualityComparator equialityFilter;
     Rarity rarity = Rarities.COMMON;
 
     public ItemProperties() {
@@ -89,16 +86,6 @@ public class ItemProperties {
 
     public ItemProperties enchantments(Object2IntMap<Enchantment> map) {
         this.enchantments = map;
-        return this;
-    }
-
-    public ItemProperties equalityFilter(ItemEqualityComparator equialityFilter) {
-        this.equialityFilter = equialityFilter;
-        return this;
-    }
-
-    public ItemProperties editEqualityFilter(UnaryOperator<ItemEqualityComparator> operator) {
-        this.equialityFilter = operator.apply(this.equialityFilter);
         return this;
     }
 

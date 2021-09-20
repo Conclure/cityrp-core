@@ -13,8 +13,9 @@ import org.apache.commons.lang.mutable.MutableInt;
 import org.jspecify.nullness.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
-public class Registry<E,C extends Registry.RegistryContext<? extends E>> {
+public class Registry<E,C extends Registry.RegistryContext<? extends E>> implements Iterable<E> {
     private final BiMap<Key,E> keyMap;
     private final Int2ObjectMap<Key> id2valueMap;
     private final Object2IntMap<Key> value2idMap;
@@ -95,12 +96,26 @@ public class Registry<E,C extends Registry.RegistryContext<? extends E>> {
         return new RegistrationsResult<>(id, key);
     }
 
+    @Override
     public UnmodifiableIterator<E> iterator() {
         return Iterators.unmodifiableIterator(this.list.iterator());
     }
 
     public int size() {
         return this.list.size();
+    }
+
+    public Stream<E> stream() {
+        return this.list.stream();
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(", ");
+        for (Map.Entry<Key, E> entry : this.keyMap.entrySet()) {
+            joiner.add(entry.getKey()+"="+entry.getValue());
+        }
+        return "Registry{"+ joiner +"}";
     }
 
     public static class RegistryContext<E> {

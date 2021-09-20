@@ -6,10 +6,9 @@ import it.unimi.dsi.fastutil.objects.*;
 import me.conclure.cityrp.item.rarity.Rarity;
 import me.conclure.cityrp.registry.Key;
 import me.conclure.cityrp.registry.Registries;
-import me.conclure.cityrp.utility.ItemStackHelper;
-import me.conclure.cityrp.utility.MoreCollections;
+import me.conclure.cityrp.utility.ItemStacks;
+import me.conclure.cityrp.utility.collections.MoreCollections;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Material;
@@ -27,6 +26,15 @@ import org.jspecify.nullness.Nullable;
 import java.util.*;
 
 public class Item {
+    public static final String UNSTACKABLE_KEY;
+    public static final String UNIQUE_KEY;
+    public static final String BYPASS_KEY;
+
+    static {
+        UNSTACKABLE_KEY = "crp:unstackableId";
+        UNIQUE_KEY = "crp:key";
+        BYPASS_KEY = "crp:bypass";
+    }
 
     private final Material material;
     private final boolean isUnstackable;
@@ -49,6 +57,9 @@ public class Item {
     @Unmodifiable
     private final Object2IntMap<Enchantment> enchantments;
     private final Rarity rarity;
+
+    @Nullable
+    private Key key;
 
     public Item(ItemProperties properties) {
         Preconditions.checkNotNull(properties.material);
@@ -103,7 +114,9 @@ public class Item {
     }
 
     public Key getKey() {
-        return Preconditions.checkNotNull(Registries.ITEMS.getKey(this));
+        Key key = Registries.ITEMS.getKey(this);
+        Preconditions.checkNotNull(key);
+        return key;
     }
 
     public int getId() {
@@ -201,7 +214,7 @@ public class Item {
     static void editMeta(ItemMeta meta, Item item) {
         meta.setCustomModelData(item.customModelData);
         meta.displayName(Component.text()
-                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                .decoration(TextDecoration.ITALIC, false)
                 .color(item.rarity.getColor())
                 .append(Component.text(item.getKey().toString()))
                 .build());
@@ -227,9 +240,9 @@ public class Item {
 
     private static void editNbt(NBTTagCompound tag, Item item) {
         if (item.isUnstackable) {
-            tag.setUUID("crp:unstackableId", UUID.randomUUID());
+            tag.setUUID(UNSTACKABLE_KEY, UUID.randomUUID());
         }
-        tag.setString("crp:key", item.getKey().toString());
+        tag.setString(UNIQUE_KEY, item.getKey().toString());
     }
 
     public ItemStack newStack(int amount) {
@@ -238,7 +251,7 @@ public class Item {
         stack.editMeta(meta -> {
             Item.editMeta(meta,this);
         });
-        stack = ItemStackHelper.copyAndEditNbt(stack, tag -> {
+        stack = ItemStacks.copyAndEditNbt(stack, tag -> {
             Item.editNbt(tag,this);
         });
         return stack;
@@ -266,7 +279,7 @@ public class Item {
         }
 
         if (!options.getBeforeNbtEdit().process(false,this,stack)) {
-            stack = ItemStackHelper.copyAndEditNbt(stack, tag -> {
+            stack = ItemStacks.copyAndEditNbt(stack, tag -> {
 
                 if (!options.getPreNbtEdit().process(false,this, tag)) {
                     Item.editNbt(tag,this);
