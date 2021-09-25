@@ -1,10 +1,10 @@
 package me.conclure.cityrp.listener;
 
 import com.google.common.base.Preconditions;
-import me.conclure.cityrp.item.MaterialItemLookup;
-import me.conclure.cityrp.registry.Key;
+import me.conclure.cityrp.item.repository.MaterialItemLookup;
 import me.conclure.cityrp.registry.Registries;
 import me.conclure.cityrp.utility.ItemStacks;
+import me.conclure.cityrp.utility.Key;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;

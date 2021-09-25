@@ -3,10 +3,10 @@ package me.conclure.cityrp.command.dispatching;
 import com.google.common.base.Preconditions;
 import me.conclure.cityrp.command.Command;
 import me.conclure.cityrp.command.CommandException;
+import me.conclure.cityrp.sender.Sender;
 import me.conclure.cityrp.utility.logging.Logger;
-import org.bukkit.command.CommandSender;
 
-public class SimpleCommandDispatcher implements CommandDispatcher {
+public class SimpleCommandDispatcher<SS> implements CommandDispatcher<SS> {
     private final Logger logger;
 
     public SimpleCommandDispatcher(Logger logger) {
@@ -15,7 +15,7 @@ public class SimpleCommandDispatcher implements CommandDispatcher {
     }
 
     @Override
-    public <S extends CommandSender> void dispatch(Command<S> command, CommandSender sender, String[] args) {
+    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<SS> sender, String[] args) {
         Preconditions.checkNotNull(command);
         Preconditions.checkNotNull(sender);
         Preconditions.checkNotNull(args);

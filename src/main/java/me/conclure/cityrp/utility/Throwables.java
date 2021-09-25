@@ -1,7 +1,5 @@
 package me.conclure.cityrp.utility;
 
-import me.conclure.cityrp.utility.Unconstructable;
-
 import java.io.PrintStream;
 import java.io.PrintWriter;
 

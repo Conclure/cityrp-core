@@ -2,15 +2,15 @@ package me.conclure.cityrp.command.dispatching;
 
 import com.google.common.base.Preconditions;
 import me.conclure.cityrp.command.Command;
-import org.bukkit.command.CommandSender;
+import me.conclure.cityrp.sender.Sender;
 
 import java.util.concurrent.Executor;
 
-public class AsynchronousCommandDispatcher<E extends Executor> implements CommandDispatcher {
+public class AsynchronousCommandDispatcher<SS,E extends Executor> implements CommandDispatcher<SS> {
     private final E executor;
-    private final CommandDispatcher delegatingDispatcher;
+    private final CommandDispatcher<SS> delegatingDispatcher;
 
-    public AsynchronousCommandDispatcher(E executor, CommandDispatcher delegatingDispatcher) {
+    public AsynchronousCommandDispatcher(E executor, CommandDispatcher<SS> delegatingDispatcher) {
         Preconditions.checkNotNull(executor);
         Preconditions.checkNotNull(delegatingDispatcher);
 
@@ -18,7 +18,7 @@ public class AsynchronousCommandDispatcher<E extends Executor> implements Comman
         this.delegatingDispatcher = delegatingDispatcher;
     }
 
-    public CommandDispatcher getDelegatingDispatcher() {
+    public CommandDispatcher<SS> getDelegatingDispatcher() {
         return this.delegatingDispatcher;
     }
 
@@ -26,10 +26,10 @@ public class AsynchronousCommandDispatcher<E extends Executor> implements Comman
         return this.executor;
     }
 
-    public <S extends CommandSender> void dispatch(Command<S> command, CommandSender sender, String[] args) {
+    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<SS> sender, String[] args) {
         Preconditions.checkNotNull(command);
         Preconditions.checkNotNull(sender);
         Preconditions.checkNotNull(args);
-        this.executor.execute(() -> this.delegatingDispatcher.dispatch(command,sender,args));
+        this.executor.execute(() -> this.delegatingDispatcher.dispatch(command, sender, args));
     }
 }

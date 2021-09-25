@@ -1,6 +1,6 @@
 package me.conclure.cityrp.position;
 
-import me.conclure.cityrp.registry.Key.Id;
+import me.conclure.cityrp.utility.Key.Id;
 
 public interface Positions {
     @Id("spawn")

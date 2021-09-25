@@ -1,17 +1,18 @@
 package me.conclure.cityrp.command.commands;
 
-import me.conclure.cityrp.command.AbstractCommand;
 import me.conclure.cityrp.command.CommandInfo;
-import net.kyori.adventure.text.Component;
+import me.conclure.cityrp.command.abstraction.UniAbstractCommand;
+import me.conclure.cityrp.position.Position;
+import me.conclure.cityrp.sender.PlayerSender;
 import org.bukkit.entity.Player;
 
-public class SetpositionCommand extends AbstractCommand<Player> {
-    public SetpositionCommand(CommandInfo<Player> commandInfo) {
-        super(commandInfo);
+public class SetpositionCommand<SS> extends UniAbstractCommand<PlayerSender<SS>,SS, Position> {
+    public SetpositionCommand(CommandInfo<PlayerSender<SS>,SS> commandInfo) {
+        super(commandInfo, null);
     }
 
     @Override
-    protected void execute(Player sender, String[] arguments) throws Exception {
-        sender.sendMessage(Component.text("hi"));
+    protected void execute(PlayerSender<SS> sender, Position argument) throws Exception {
+
     }
 }

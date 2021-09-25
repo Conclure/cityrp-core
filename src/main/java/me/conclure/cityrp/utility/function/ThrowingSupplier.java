@@ -6,7 +6,7 @@ import org.jspecify.nullness.Nullable;
 import java.util.function.Supplier;
 
 @FunctionalInterface
-public interface ThrowingSupplier<T,E extends Exception> extends Supplier<T> {
+public interface ThrowingSupplier<T, E extends Exception> extends Supplier<T> {
     T getExceptionally() throws E;
 
     @Nullable

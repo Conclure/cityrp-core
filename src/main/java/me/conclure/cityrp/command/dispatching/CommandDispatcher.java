@@ -1,9 +1,9 @@
 package me.conclure.cityrp.command.dispatching;
 
 import me.conclure.cityrp.command.Command;
-import org.bukkit.command.CommandSender;
+import me.conclure.cityrp.sender.Sender;
 
-public interface CommandDispatcher {
+public interface CommandDispatcher<SS> {
 
-    <S extends CommandSender> void dispatch(Command<S> command, CommandSender sender, String[] args);
+    void dispatch(Command<? extends Sender<SS>,SS> command, Sender<SS> sender, String[] args);
 }

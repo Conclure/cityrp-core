@@ -41,7 +41,7 @@ public class TaskCoordinator<E extends Executor> {
         return CompletableFuture.supplyAsync(supplier, this.executor);
     }
 
-    public <T> CompletableFuture<T> supplyExceptionally(ThrowingSupplier<? extends T,?> supplier) {
+    public <T> CompletableFuture<T> supplyExceptionally(ThrowingSupplier<? extends T, ?> supplier) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return supplier.getExceptionally();

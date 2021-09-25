@@ -1,9 +1,6 @@
 package me.conclure.cityrp.listener;
 
-import me.conclure.cityrp.gui.ItemRegistryGuiManager;
 import me.conclure.cityrp.gui.PositionRegistryGuiManager;
-import me.conclure.cityrp.item.Item;
-import me.conclure.cityrp.item.ItemCreationOptions;
 import me.conclure.cityrp.position.ImmutableLocation;
 import me.conclure.cityrp.position.Position;
 import net.kyori.adventure.text.Component;
@@ -13,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemFlag;
 
 import java.util.concurrent.TimeUnit;
 
@@ -59,9 +55,9 @@ public class PositionRegistryGuiListener implements Listener {
         ImmutableLocation location = position.getLocation();
         location.teleport(whoClicked)
                 .orTimeout(10, TimeUnit.SECONDS)
-                .whenComplete((result,exception) -> {
+                .whenComplete((result, exception) -> {
                     if (exception != null) {
-                        whoClicked.sendMessage(Component.text("Failed teleporting you: "+exception.getMessage()));
+                        whoClicked.sendMessage(Component.text("Failed teleporting you: " + exception.getMessage()));
                         return;
                     }
                     if (result == Boolean.FALSE) {

@@ -1,30 +1,23 @@
-package me.conclure.cityrp.registry;
+package me.conclure.cityrp.utility;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import org.checkerframework.checker.units.qual.K;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.IdentityHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public final class Key {
-    static final Pattern PATTERN;
+    private static final Pattern PATTERN;
+    private static final KeyPool KEY_POOL = new KeyPool();
 
     static {
         PATTERN = Pattern.compile("[a-z0-9_]+");
     }
 
-    private static final KeyPool KEY_POOL = new KeyPool();
     private final String key;
 
     private Key(String key) {
@@ -60,7 +53,7 @@ public final class Key {
     }
 
     static class KeyPool {
-        final LoadingCache<String,Key> keyMap;
+        final LoadingCache<String, Key> keyMap;
 
         KeyPool() {
             this.keyMap = Caffeine.newBuilder()

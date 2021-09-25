@@ -11,9 +11,6 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.TimeUnit;
@@ -21,12 +18,12 @@ import java.util.concurrent.TimeUnit;
 public class ProfileGuiManager {
     public static final Style STYLE = Style.style()
             .color(NamedTextColor.WHITE)
-            .decoration(TextDecoration.BOLD,true)
-            .decoration(TextDecoration.ITALIC,false)
+            .decoration(TextDecoration.BOLD, true)
+            .decoration(TextDecoration.ITALIC, false)
             .build();
 
     private final GuiFactory guiFactory;
-    private final LoadingCache<Player,GuiProfile> cache;
+    private final LoadingCache<Player, GuiProfile> cache;
 
     public ProfileGuiManager(
             ItemRegistryGuiManager itemRegistryGuiManager,
@@ -53,7 +50,7 @@ public class ProfileGuiManager {
                 .softValues()
                 .weakKeys()
                 .expireAfterAccess(2, TimeUnit.MINUTES)
-                .build(player -> new GuiProfile(this.guiFactory,player));
+                .build(player -> new GuiProfile(this.guiFactory, player));
     }
 
     public void open(Player player) {
@@ -68,7 +65,7 @@ public class ProfileGuiManager {
 
         GuiProfile(GuiFactory factory, Player player) {
             this.player = player;
-            this.gui = factory.newGui(Component.text("Profile Menu "+player.getName()));
+            this.gui = factory.newGui(Component.text("Profile Menu " + player.getName()));
         }
     }
 

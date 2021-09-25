@@ -1,6 +1,6 @@
 package me.conclure.cityrp.item.rarity;
 
-import me.conclure.cityrp.registry.Key.Id;
+import me.conclure.cityrp.utility.Key.Id;
 import me.conclure.cityrp.utility.Unconstructable;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

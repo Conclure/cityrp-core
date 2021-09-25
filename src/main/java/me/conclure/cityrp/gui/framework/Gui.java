@@ -12,7 +12,7 @@ public class Gui implements OpenableInventoryHolder {
     Gui(GuiFactory factory, Component title) {
 
         this.factory = factory;
-        this.inventory = Bukkit.createInventory(this,factory.getSize(),title);
+        this.inventory = Bukkit.createInventory(this, factory.getSize(), title);
 
         this.render();
     }

@@ -2,8 +2,6 @@ package me.conclure.cityrp.position;
 
 import org.bukkit.World;
 
-import java.lang.ref.WeakReference;
-
 public class ImmutableLocationBuilder {
     private double x;
     private double y;

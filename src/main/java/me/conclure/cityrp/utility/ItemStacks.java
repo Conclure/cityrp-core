@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class ItemStacks extends Unconstructable{
+public final class ItemStacks extends Unconstructable {
 
     public static final ItemStack AIR_STACK = new UnmodifiableItemStack(Material.AIR);
 
@@ -34,7 +34,7 @@ public final class ItemStacks extends Unconstructable{
         return CraftItemStack.asNMSCopy(stack).getOrCreateTag();
     }
 
-    public static <T> T getObjectFromNbt(ItemStack stack, Function<? super NBTTagCompound,? extends T> function) {
+    public static <T> T getObjectFromNbt(ItemStack stack, Function<? super NBTTagCompound, ? extends T> function) {
         return function.apply(ItemStacks.getNbtTag(stack));
     }
 

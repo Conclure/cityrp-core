@@ -54,6 +54,6 @@ public class ImmutableLocation {
         if (world == null) {
             return CompletableFuture.completedFuture(Boolean.FALSE);
         }
-        return entity.teleportAsync(new Location(world,this.x,this.y,this.z,this.yaw,this.pitch));
+        return entity.teleportAsync(new Location(world, this.x, this.y, this.z, this.yaw, this.pitch));
     }
 }

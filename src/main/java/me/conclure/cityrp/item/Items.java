@@ -1,7 +1,7 @@
 package me.conclure.cityrp.item;
 
 import me.conclure.cityrp.item.rarity.Rarities;
-import me.conclure.cityrp.registry.Key.Id;
+import me.conclure.cityrp.utility.Key.Id;
 import org.bukkit.Material;
 
 import java.util.function.UnaryOperator;
@@ -23,6 +23,6 @@ public class Items {
     }
 
     private static Item of(UnaryOperator<ItemProperties> propertiesConfigurer) {
-        return new Item(propertiesConfigurer.apply(new ItemProperties()));
+        return new Item(propertiesConfigurer.apply(new ItemProperties()), itemRepository);
     }
 }

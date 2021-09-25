@@ -7,17 +7,17 @@ import org.jspecify.nullness.Nullable;
 import java.util.Map;
 import java.util.function.Function;
 
-public class LoadingMap<K,V> extends ForwardingMap<K,V> {
-    private final Map<K,V> map;
-    private final Function<? super K,? extends V> loadingFunction;
+public class LoadingMap<K, V> extends ForwardingMap<K, V> {
+    private final Map<K, V> map;
+    private final Function<? super K, ? extends V> loadingFunction;
 
-    public LoadingMap(Map<K,V> map, Function<? super K, ? extends V> loadingFunction) {
+    public LoadingMap(Map<K, V> map, Function<? super K, ? extends V> loadingFunction) {
         this.map = map;
         this.loadingFunction = loadingFunction;
     }
 
     @Override
-    protected Map<K,V> delegate() {
+    protected Map<K, V> delegate() {
         return this.map;
     }
 

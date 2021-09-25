@@ -1,12 +1,19 @@
 package me.conclure.cityrp.item;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.*;
-import it.unimi.dsi.fastutil.objects.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import me.conclure.cityrp.item.rarity.Rarity;
-import me.conclure.cityrp.registry.Key;
-import me.conclure.cityrp.registry.Registries;
+import me.conclure.cityrp.item.repository.ItemRepository;
 import me.conclure.cityrp.utility.ItemStacks;
+import me.conclure.cityrp.utility.Key;
 import me.conclure.cityrp.utility.collections.MoreCollections;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -23,7 +30,14 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.jspecify.nullness.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
+import java.util.Set;
+import java.util.UUID;
 
 public class Item {
     public static final String UNSTACKABLE_KEY;
@@ -58,10 +72,9 @@ public class Item {
     private final Object2IntMap<Enchantment> enchantments;
     private final Rarity rarity;
 
-    @Nullable
-    private Key key;
+    private final ItemRepository itemRepository;
 
-    public Item(ItemProperties properties) {
+    public Item(ItemRepository itemRepository, ItemProperties properties) {
         Preconditions.checkNotNull(properties.material);
         Preconditions.checkArgument(!properties.material.isAir());
         Preconditions.checkArgument(properties.durability >= 0);
@@ -71,19 +84,35 @@ public class Item {
         Preconditions.checkNotNull(properties.enchantments);
         Preconditions.checkNotNull(properties.rarity);
 
+        this.itemRepository = itemRepository;
         this.material = properties.material;
         this.isUnstackable = properties.isUnstackable;
         this.isUnbreakable = properties.isUnbreakable;
         this.durability = properties.durability;
         this.customModelData = properties.customModelData;
         switch (properties.lore.length) {
-            case 0: { this.lore = Collections.emptyList(); break; }
-            case 1: { this.lore = Collections.singletonList(properties.lore[0]); break; }
-            default: { this.lore = ImmutableList.copyOf(properties.lore); break; }
+            case 0: {
+                this.lore = Collections.emptyList();
+                break;
+            }
+            case 1: {
+                this.lore = Collections.singletonList(properties.lore[0]);
+                break;
+            }
+            default: {
+                this.lore = ImmutableList.copyOf(properties.lore);
+                break;
+            }
         }
         switch (properties.itemFlags.length) {
-            case 0: { this.itemFlags = Collections.emptySet(); break; }
-            case 1: { this.itemFlags = Collections.singleton(properties.itemFlags[0]); break; }
+            case 0: {
+                this.itemFlags = Collections.emptySet();
+                break;
+            }
+            case 1: {
+                this.itemFlags = Collections.singleton(properties.itemFlags[0]);
+                break;
+            }
             default: {
                 EnumSet<ItemFlag> tempSet = EnumSet.noneOf(ItemFlag.class);
                 tempSet.addAll(Arrays.asList(properties.itemFlags));
@@ -92,12 +121,15 @@ public class Item {
             }
         }
         switch (properties.enchantments.size()) {
-            case 0: { this.enchantments = Object2IntMaps.emptyMap(); break; }
+            case 0: {
+                this.enchantments = Object2IntMaps.emptyMap();
+                break;
+            }
             case 1: {
                 ObjectSet<Object2IntMap.Entry<Enchantment>> entries = properties.enchantments.object2IntEntrySet();
                 ObjectIterator<Object2IntMap.Entry<Enchantment>> iterator = entries.iterator();
                 Object2IntMap.Entry<Enchantment> entry = iterator.next();
-                this.enchantments = Object2IntMaps.singleton(entry.getKey(),entry.getIntValue());
+                this.enchantments = Object2IntMaps.singleton(entry.getKey(), entry.getIntValue());
                 break;
             }
             default: {
@@ -113,14 +145,48 @@ public class Item {
         this.rarity = properties.rarity;
     }
 
+    static void editMeta(ItemMeta meta, Item item) {
+        meta.setCustomModelData(item.customModelData);
+        meta.displayName(Component.text()
+                .decoration(TextDecoration.ITALIC, false)
+                .color(item.rarity.getColor())
+                .append(Component.text(item.getKey().toString()))
+                .build());
+        meta.setUnbreakable(item.isUnbreakable);
+        meta.lore(item.lore);
+
+        if (meta instanceof Damageable) {
+            ((Damageable) meta).setDamage(item.durability);
+        }
+
+        for (ItemFlag itemFlag : item.itemFlags) {
+            meta.addItemFlags(itemFlag);
+        }
+
+        for (Object2IntMap.Entry<Enchantment> entry : item.enchantments.object2IntEntrySet()) {
+            meta.addEnchant(entry.getKey(), entry.getIntValue(), true);
+        }
+
+        for (Map.Entry<Attribute, AttributeModifier> entry : item.attributes.entries()) {
+            meta.addAttributeModifier(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private static void editNbt(NBTTagCompound tag, Item item) {
+        if (item.isUnstackable) {
+            tag.setUUID(UNSTACKABLE_KEY, UUID.randomUUID());
+        }
+        tag.setString(UNIQUE_KEY, item.getKey().toString());
+    }
+
     public Key getKey() {
-        Key key = Registries.ITEMS.getKey(this);
+        Key key = this.itemRepository.getKey(this);
         Preconditions.checkNotNull(key);
         return key;
     }
 
     public int getId() {
-        OptionalInt id = Registries.ITEMS.getId(this);
+        OptionalInt id = itemRepository.getId(this);
         Preconditions.checkArgument(id.isPresent());
         return id.getAsInt();
     }
@@ -211,79 +277,45 @@ public class Item {
         return this.rarity;
     }
 
-    static void editMeta(ItemMeta meta, Item item) {
-        meta.setCustomModelData(item.customModelData);
-        meta.displayName(Component.text()
-                .decoration(TextDecoration.ITALIC, false)
-                .color(item.rarity.getColor())
-                .append(Component.text(item.getKey().toString()))
-                .build());
-        meta.setUnbreakable(item.isUnbreakable);
-        meta.lore(item.lore);
-
-        if (meta instanceof Damageable) {
-            ((Damageable) meta).setDamage(item.durability);
-        }
-
-        for (ItemFlag itemFlag : item.itemFlags) {
-            meta.addItemFlags(itemFlag);
-        }
-
-        for (Object2IntMap.Entry<Enchantment> entry : item.enchantments.object2IntEntrySet()) {
-            meta.addEnchant(entry.getKey(), entry.getIntValue(), true);
-        }
-
-        for (Map.Entry<Attribute, AttributeModifier> entry : item.attributes.entries()) {
-            meta.addAttributeModifier(entry.getKey(), entry.getValue());
-        }
-    }
-
-    private static void editNbt(NBTTagCompound tag, Item item) {
-        if (item.isUnstackable) {
-            tag.setUUID(UNSTACKABLE_KEY, UUID.randomUUID());
-        }
-        tag.setString(UNIQUE_KEY, item.getKey().toString());
-    }
-
     public ItemStack newStack(int amount) {
         ItemStack stack = new ItemStack(this.material);
         stack.setAmount(amount);
         stack.editMeta(meta -> {
-            Item.editMeta(meta,this);
+            Item.editMeta(meta, this);
         });
         stack = ItemStacks.copyAndEditNbt(stack, tag -> {
-            Item.editNbt(tag,this);
+            Item.editNbt(tag, this);
         });
         return stack;
     }
 
     public ItemStack newStack(int amount, ItemCreationOptions options) {
         ItemStack stack = new ItemStack(this.material);
-        options.getOnCreation().run(this,stack);
+        options.getOnCreation().run(this, stack);
 
-        if (!options.getPreStackEdit().process(false,this,stack)) {
+        if (!options.getPreStackEdit().process(false, this, stack)) {
             stack.setAmount(amount);
-            options.getPostStackEdit().run(this,stack);
+            options.getPostStackEdit().run(this, stack);
         }
 
-        if (!options.getBeforeMetaEdit().process(false,this,stack)) {
+        if (!options.getBeforeMetaEdit().process(false, this, stack)) {
             stack.editMeta(meta -> {
 
-                if (!options.getPreMetaEdit().process(false,this,meta)) {
-                    Item.editMeta(meta,this);
-                    options.getPostMetaEdit().run(this,meta);
+                if (!options.getPreMetaEdit().process(false, this, meta)) {
+                    Item.editMeta(meta, this);
+                    options.getPostMetaEdit().run(this, meta);
                 }
 
             });
-            options.getAfterMetaEdit().run(this,stack);
+            options.getAfterMetaEdit().run(this, stack);
         }
 
-        if (!options.getBeforeNbtEdit().process(false,this,stack)) {
+        if (!options.getBeforeNbtEdit().process(false, this, stack)) {
             stack = ItemStacks.copyAndEditNbt(stack, tag -> {
 
-                if (!options.getPreNbtEdit().process(false,this, tag)) {
-                    Item.editNbt(tag,this);
-                    options.getPostNbtEdit().run(this,tag);
+                if (!options.getPreNbtEdit().process(false, this, tag)) {
+                    Item.editNbt(tag, this);
+                    options.getPostNbtEdit().run(this, tag);
                 }
 
             });
@@ -294,7 +326,7 @@ public class Item {
     }
 
     public ItemStack newStack(ItemCreationOptions options) {
-        return this.newStack(1,options);
+        return this.newStack(1, options);
     }
 
     public ItemStack newStack() {

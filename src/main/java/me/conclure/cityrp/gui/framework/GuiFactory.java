@@ -1,17 +1,16 @@
 package me.conclure.cityrp.gui.framework;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.conclure.cityrp.utility.function.Functions;
 import net.kyori.adventure.text.Component;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.nullness.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -47,7 +46,7 @@ public class GuiFactory implements Iterable<GuiCell> {
     }
 
     public Gui newGui(Component title) {
-        return new Gui(this,title);
+        return new Gui(this, title);
     }
 
     public int getSize() {
@@ -117,7 +116,7 @@ public class GuiFactory implements Iterable<GuiCell> {
 
                 cellArray[i] = builder.build(i);
             }
-            return new GuiFactory(this.size,cellArray, this.openAction, this.closeAction, this.dragAction);
+            return new GuiFactory(this.size, cellArray, this.openAction, this.closeAction, this.dragAction);
         }
     }
 }

@@ -28,7 +28,7 @@ public class PositionRegistryGuiManager {
         this.cache = Caffeine.newBuilder()
                 .softValues()
                 .expireAfterAccess(2, TimeUnit.MINUTES)
-                .build(key -> new GuiPage(key,this.maxPages));
+                .build(key -> new GuiPage(key, this.maxPages));
     }
 
     public boolean openPage(int page, HumanEntity entity) {
@@ -45,7 +45,7 @@ public class PositionRegistryGuiManager {
         if (this.maxPages < 1) {
             return false;
         }
-        this.openPage(1,entity);
+        this.openPage(1, entity);
         return true;
     }
 
@@ -53,7 +53,7 @@ public class PositionRegistryGuiManager {
         if (this.maxPages < 1) {
             return false;
         }
-        this.openPage(this.maxPages,entity);
+        this.openPage(this.maxPages, entity);
         return true;
     }
 
@@ -67,10 +67,10 @@ public class PositionRegistryGuiManager {
 
         GuiPage(int page, int maxPages) {
             this.page = page;
-            this.inventory = Bukkit.createInventory(this,6*9, Component.text("Position Registry ("+page+"/"+maxPages+")"));
+            this.inventory = Bukkit.createInventory(this, 6 * 9, Component.text("Position Registry (" + page + "/" + maxPages + ")"));
             this.itemList = new Position[ITEMS_PER_PAGE];
-            for (int i = (page-1)*ITEMS_PER_PAGE; i < page*ITEMS_PER_PAGE; i++) {
-                int slot = i - (page-1)*ITEMS_PER_PAGE;
+            for (int i = (page - 1) * ITEMS_PER_PAGE; i < page * ITEMS_PER_PAGE; i++) {
+                int slot = i - (page - 1) * ITEMS_PER_PAGE;
                 Position item = Registries.POSITIONS.getById(i);
                 if (item == null) {
                     break;
