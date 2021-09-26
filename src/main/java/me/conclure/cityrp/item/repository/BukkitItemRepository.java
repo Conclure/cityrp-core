@@ -2,8 +2,6 @@ package me.conclure.cityrp.item.repository;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import me.conclure.cityrp.item.Item;
 import me.conclure.cityrp.utility.Key;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -12,19 +10,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.nullness.Nullable;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class BukkitItemRepository implements ItemRepository<Material> {
     private final BiMap<Key, Item> map;
-    private final Int2ObjectMap<Key> idMap;
-    private final Object2IntMap<Key> keyMap;
+    private final ConcurrentMap<Integer,Key> idMap;
+    private final ConcurrentMap<Key,Integer> keyMap;
     private final MutableInt idTracker;
     private final MaterialItemLookup<Material> materialItemLookup;
+    private final AtomicBoolean isOperating;
 
     public BukkitItemRepository(
             BiMap<Key, Item> map,
-            Int2ObjectMap<Key> idMap,
-            Object2IntMap<Key> keyMap
+            ConcurrentMap<Integer,Key> idMap,
+            ConcurrentMap<Key,Integer> keyMap
     ) {
         Preconditions.checkNotNull(map);
         Preconditions.checkNotNull(idMap);
@@ -35,6 +36,7 @@ public class BukkitItemRepository implements ItemRepository<Material> {
         this.map = map;
         this.materialItemLookup = new BukkitMaterialItemLookup(this);
         this.idTracker = new MutableInt();
+        this.isOperating = new AtomicBoolean();
     }
 
     @Override
@@ -100,32 +102,11 @@ public class BukkitItemRepository implements ItemRepository<Material> {
         return this.map.size();
     }
 
-    @NotNull
     @Override
-    public Iterator iterator() {
-        return new IteratorImpl();
-    }
-
-    class IteratorImpl implements Iterator {
-
-        @Override
-        public boolean hasNext() {
-            return false;
+    public void forEach(Consumer<? super Item> consumer) {
+        if (this.isOperating.get()) {
+            return;
         }
-
-        @Override
-        public Item next() {
-            return null;
-        }
-
-        @Override
-        public void remove() {
-            Iterator.super.remove();
-        }
-
-        @Override
-        public void replace(Item item) {
-
-        }
+        this.isOperating.set(true);
     }
 }

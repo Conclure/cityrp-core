@@ -6,10 +6,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 import me.conclure.cityrp.command.dispatching.CommandDispatcher;
 import me.conclure.cityrp.sender.Sender;
-import org.bukkit.command.CommandSender;
 import org.jspecify.nullness.Nullable;
 
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
 
 public final class CommandInfo<S extends Sender<SS>,SS> {
     @Nullable
@@ -18,8 +18,9 @@ public final class CommandInfo<S extends Sender<SS>,SS> {
     private final TypeToken<S> senderType;
     private final ImmutableList<String> aliases;
     private final CommandDispatcher<SS> commandDispatcher;
+    private final Lock lock;
 
-    private CommandInfo(String permission, String name, TypeToken<S> senderType, ImmutableSet<String> aliases, CommandDispatcher<SS> commandDispatcher) {
+    private CommandInfo(String permission, String name, TypeToken<S> senderType, ImmutableSet<String> aliases, CommandDispatcher<SS> commandDispatcher, Lock lock) {
         Preconditions.checkNotNull(permission);
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(senderType);
@@ -31,6 +32,7 @@ public final class CommandInfo<S extends Sender<SS>,SS> {
         this.senderType = senderType;
         this.aliases = ImmutableList.copyOf(aliases);
         this.commandDispatcher = commandDispatcher;
+        this.lock = lock;
     }
 
     public static <S extends Sender<SS>,SS> Builder<S,SS> newBuilder(TypeToken<S> senderType) {
@@ -63,6 +65,15 @@ public final class CommandInfo<S extends Sender<SS>,SS> {
         return this.name;
     }
 
+    @Nullable
+    public Lock getLock() {
+        return this.lock;
+    }
+
+    public boolean requiresLocking() {
+        return this.lock != null;
+    }
+
     public static final class Builder<S extends Sender<SS>,SS> {
         private final TypeToken<S> senderType;
 
@@ -71,6 +82,7 @@ public final class CommandInfo<S extends Sender<SS>,SS> {
         private String name;
         private ImmutableSet<String> aliases = ImmutableSet.of();
         private CommandDispatcher<SS> commandDispatcher;
+        private Lock lock;
 
         private Builder(TypeToken<S> senderType) {
             this.senderType = senderType;
@@ -104,8 +116,20 @@ public final class CommandInfo<S extends Sender<SS>,SS> {
             return this;
         }
 
+        public Builder<S,SS> lock(Lock lock) {
+            this.lock = lock;
+            return this;
+        }
+
         public CommandInfo<S,SS> build() {
-            return new CommandInfo<>(this.permission, this.name, this.senderType, this.aliases, this.commandDispatcher);
+            return new CommandInfo<>(
+                    this.permission,
+                    this.name,
+                    this.senderType,
+                    this.aliases,
+                    this.commandDispatcher,
+                    this.lock
+            );
         }
     }
 }

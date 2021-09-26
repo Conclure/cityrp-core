@@ -1,5 +1,6 @@
 package me.conclure.cityrp.command.repository;
 
+import com.google.common.collect.ImmutableMap;
 import me.conclure.cityrp.command.Command;
 import me.conclure.cityrp.command.CommandInfo;
 import me.conclure.cityrp.sender.Sender;
@@ -14,19 +15,43 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class BukkitCommandRepository implements CommandRepository<CommandSender> {
-    private final Map<String, Command<? extends Sender<CommandSender>,CommandSender>> commandMap;
-    private final Map<String, Command<? extends Sender<CommandSender>,CommandSender>> aliasMap;
+    private final ImmutableMap<String, Command<? extends Sender<CommandSender>,CommandSender>> commandMap;
+    private final ImmutableMap<String, Command<? extends Sender<CommandSender>,CommandSender>> aliasMap;
     private final Logger logger;
     private final Supplier<CommandInjector> commandInjector;
     private final SenderManager<CommandSender> senderManager;
 
-    public BukkitCommandRepository(Logger logger, PluginManager pluginManager, Plugin plugin, SenderManager<CommandSender> senderManager) {
+    public BukkitCommandRepository(
+            Logger logger,
+            PluginManager pluginManager,
+            Plugin plugin,
+            SenderManager<CommandSender> senderManager,
+            Stream<Command<? extends Sender<CommandSender>,CommandSender>> commands) {
         this.logger = logger;
         this.senderManager = senderManager;
-        this.commandMap = new HashMap<>();
-        this.aliasMap = new HashMap<>();
+        ImmutableMap.Builder<String, Command<? extends Sender<CommandSender>,CommandSender>> commandMapBuilder = ImmutableMap.builder();
+        Map<String,Command<? extends Sender<CommandSender>,CommandSender>> tempAliasMap = new HashMap<>();
+        commands.forEach(command -> {
+            CommandInfo<? extends Sender<CommandSender>,CommandSender> info = command.getInfo();
+            String name = info.getName();
+            commandMapBuilder.put(name, command);
+
+            for (String alias : info.getAliases()) {
+                Command<?,CommandSender> previousCommand = tempAliasMap.get(alias);
+
+                if (previousCommand != null) {
+                    String previousCommandName = previousCommand.getInfo().getName();
+                    this.logger.warnf("Command alias %s already registered for %s, overriding for %s", alias, previousCommandName, name);
+                }
+
+                tempAliasMap.put(alias, command);
+            }
+        });
+        this.commandMap = commandMapBuilder.build();
+        this.aliasMap = ImmutableMap.copyOf(tempAliasMap);
         this.commandInjector = () -> new CommandInjector(pluginManager, plugin.getName(), this.senderManager);
     }
 
@@ -50,21 +75,24 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
         return this.aliasMap.get(alias.toLowerCase(Locale.ROOT));
     }
 
-    @Override
-    public <S extends Sender<CommandSender>> void add(Command<S,CommandSender> command) {
-        CommandInfo<S,CommandSender> info = command.getInfo();
-        String name = info.getName();
-        this.commandMap.put(name, command);
+    public static class Builder {
+        private final Stream.Builder<Command<? extends Sender<CommandSender>,CommandSender>> commands = Stream.builder();
 
-        for (String alias : info.getAliases()) {
-            Command<?,CommandSender> previousCommand = this.aliasMap.get(alias);
+        public Builder() {
+        }
 
-            if (previousCommand != null) {
-                String previousCommandName = previousCommand.getInfo().getName();
-                this.logger.warnf("Command alias %s already registered for %s, overriding for %s", alias, previousCommandName, name);
-            }
+        public Builder addCommand(Command<? extends Sender<CommandSender>,CommandSender> command) {
+            this.commands.add(command);
+            return this;
+        }
 
-            this.aliasMap.put(alias, command);
+        public BukkitCommandRepository build(
+                Logger logger,
+                PluginManager pluginManager,
+                Plugin plugin,
+                SenderManager<CommandSender> senderManager
+        ) {
+            return new BukkitCommandRepository(logger,pluginManager,plugin,senderManager, this.commands.build());
         }
     }
 }

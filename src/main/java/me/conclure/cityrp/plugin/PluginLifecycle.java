@@ -37,6 +37,7 @@ import me.conclure.cityrp.sender.SenderManager;
 import me.conclure.cityrp.sender.impl.BukkitSenderManager;
 import me.conclure.cityrp.utility.Key;
 import me.conclure.cityrp.utility.MoreFiles;
+import me.conclure.cityrp.utility.TypeTokens;
 import me.conclure.cityrp.utility.concurrent.BukkitTaskCoordinator;
 import me.conclure.cityrp.utility.concurrent.TaskCoordinator;
 import me.conclure.cityrp.utility.logging.DelegatedSlf4jLogger;
@@ -55,6 +56,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -79,7 +81,7 @@ public class PluginLifecycle implements Lifecycle {
     private final SenderManager<CommandSender> senderManager;
     private final CommandDispatcher<CommandSender> commandDispatcher;
     private final CommandDispatcher<CommandSender> asyncCommandDispatcher;
-    private final CommandRepository<CommandSender> commandRepository;
+    private CommandRepository<CommandSender> commandRepository;
 
     private ItemRegistryGuiManager itemRegistryGuiManager;
     private PositionRegistryGuiManager positionRegistryGuiManager;
@@ -120,13 +122,12 @@ public class PluginLifecycle implements Lifecycle {
         this.commandDispatcher = this.newCommandDispatcher(this.logger);
         this.asyncCommandDispatcher = this.newAsynchronousCommandDispatcher(this.taskCoordinator,this.commandDispatcher);
         this.senderManager = this.newSenderManager();
-        this.commandRepository = this.newCommandRepository(this.logger,this.senderManager);
     }
 
     private ItemRepository<Material> newItemRepository() {
         BiMap<Key, Item> map = HashBiMap.create();
-        Int2ObjectMap<Key> idMap = new Int2ObjectOpenHashMap<>();
-        Object2IntMap<Key> keyMap = new Object2IntOpenHashMap<>();
+        ConcurrentHashMap<Key, Integer> keyMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Integer, Key> idMap = new ConcurrentHashMap<>();
         return new BukkitItemRepository(map, idMap, keyMap);
     }
 
@@ -171,10 +172,6 @@ public class PluginLifecycle implements Lifecycle {
         return new AsynchronousCommandDispatcher<>(commandDispatcher,taskCoordinator);
     }
 
-    private CommandRepository<CommandSender> newCommandRepository(Logger logger, SenderManager<CommandSender> senderManager) {
-        return new BukkitCommandRepository(logger, this.pluginManager, this.plugin, senderManager);
-    }
-
     private SenderManager<CommandSender> newSenderManager() {
         BukkitAudiences audiences = BukkitAudiences.create(this.plugin);
         return new BukkitSenderManager(audiences);
@@ -200,16 +197,20 @@ public class PluginLifecycle implements Lifecycle {
     }
 
     private void setupCommands() {
-        TypeToken<PlayerSender<CommandSender>> playerSenderCommandSenderTypeToken = new TypeToken<>() {};
 
-        SetpositionCommand<CommandSender> setpositionCommand = new SetpositionCommand<>(CommandInfo.newBuilder(playerSenderCommandSenderTypeToken)
-                .name("setposition")
-                .aliases("testd")
-                .commandDispatcher(this.asyncCommandDispatcher)
-                .permission("crp.admin")
-                .build());
+        SetpositionCommand<CommandSender> setpositionCommand = new SetpositionCommand<>(
+                CommandInfo.newBuilder(TypeTokens.PLAYER_SENDER_COMMAND_SENDER)
+                        .aliases("testd")
+                        .commandDispatcher(this.asyncCommandDispatcher)
+                        .permission("crp.admin")
+                        .build()
+        );
 
-        this.commandRepository.add(setpositionCommand);
+        this.commandRepository = new BukkitCommandRepository.Builder()
+                .addCommand(setpositionCommand)
+                .build(this.logger,this.pluginManager,this.plugin,this.senderManager);
+
+
         this.commandRepository.registerContainedCommands();
     }
 

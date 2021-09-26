@@ -14,6 +14,4 @@ public interface CommandRepository<SS> {
 
     @Nullable
     Command<? extends Sender<SS>,SS> getByAlias(String alias);
-
-    <S extends Sender<SS>> void add(Command<S,SS> command);
 }

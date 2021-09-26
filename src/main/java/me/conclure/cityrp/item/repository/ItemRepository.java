@@ -5,8 +5,9 @@ import me.conclure.cityrp.utility.Key;
 import org.jspecify.nullness.Nullable;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 
-public interface ItemRepository<M> extends Iterable<Item> {
+public interface ItemRepository<M> {
     @Nullable
     Item add(Key key, Item item);
 
@@ -31,7 +32,5 @@ public interface ItemRepository<M> extends Iterable<Item> {
 
     int size();
 
-    interface Iterator extends java.util.Iterator<Item> {
-        void replace(Item item);
-    }
+    boolean forEach(Consumer<? super Item> consumer);
 }
