@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.jspecify.nullness.Nullable;
 
 public interface CommandRepository<SS> {
-    void injectCommands();
+    void registerContainedCommands();
 
     @Nullable
     Command<? extends Sender<SS>,SS> getByName(String name);
@@ -15,5 +15,5 @@ public interface CommandRepository<SS> {
     @Nullable
     Command<? extends Sender<SS>,SS> getByAlias(String alias);
 
-    <S extends Sender<SS>> void register(Command<S,SS> command);
+    <S extends Sender<SS>> void add(Command<S,SS> command);
 }

@@ -1,5 +1,5 @@
 package me.conclure.cityrp.utility;
 
-public interface Delegeteable<V> {
+public interface Delegable<V> {
     V delegate();
 }

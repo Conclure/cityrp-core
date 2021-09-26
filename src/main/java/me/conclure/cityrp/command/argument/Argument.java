@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 public interface Argument<T, S extends Sender<SS>,SS> {
     ArgumentInfo getInfo();
 
-    ArgumentParseResult<T, S> parse(String argument);
+    ArgumentParseResult<T, S,SS> parse(String argument);
 
     Component getNameFormatted();
 }

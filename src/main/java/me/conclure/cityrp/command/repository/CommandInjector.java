@@ -62,7 +62,7 @@ final class CommandInjector {
         @Override
         public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
             CommandDispatcher<CommandSender> dispatcher = this.command.getInfo().getCommandDispatcher();
-            Sender<CommandSender> sender = CommandInjector.this.senderManager.asSender(commandSender);
+            Sender<? extends CommandSender> sender = CommandInjector.this.senderManager.asSender(commandSender);
 
             dispatcher.dispatch(this.command, sender, strings);
             return true;

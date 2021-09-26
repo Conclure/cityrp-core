@@ -21,7 +21,7 @@ public abstract class AbstractCommand<S extends Sender<SS>,SS> implements Comman
 
     static <S extends Sender<SS>,SS> void run0(
             AbstractCommand<S,SS> command,
-            Sender<SS> sender,
+            Sender<? extends SS> sender,
             String[] arguments,
             ThrowingConsumer<S, Exception> executor
     ) {
@@ -53,21 +53,21 @@ public abstract class AbstractCommand<S extends Sender<SS>,SS> implements Comman
     }
 
     @Override
-    public boolean acceptsSender(Sender<SS> sender) {
+    public boolean acceptsSender(Sender<? extends SS> sender) {
         Preconditions.checkNotNull(sender);
 
         return this.commandInfo.getSenderType().isSupertypeOf(sender.getClass());
     }
 
     @Override
-    public boolean acceptsSenderType(Class<? extends Sender<SS>> type) {
+    public boolean acceptsSenderType(Class<? extends Sender<? extends SS>> type) {
         Preconditions.checkNotNull(type);
 
         return this.commandInfo.getSenderType().isSupertypeOf(type);
     }
 
     @Override
-    public boolean hasPermission(Sender<SS> sender) {
+    public boolean hasPermission(Sender<? extends SS> sender) {
         Preconditions.checkNotNull(sender);
 
         boolean notRequiresPermission = !this.commandInfo.requiresPermission();

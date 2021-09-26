@@ -5,8 +5,8 @@ import me.conclure.cityrp.utility.Key;
 import org.bukkit.Material;
 import org.jspecify.nullness.Nullable;
 
-public interface MaterialItemLookup {
-    void register(Material material, Key key);
+public interface MaterialItemLookup<M> {
+    void register(M material, Key key);
 
-    @Nullable Item lookup(Material material);
+    @Nullable Item lookup(M material);
 }

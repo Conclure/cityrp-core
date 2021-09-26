@@ -1,10 +1,11 @@
 package me.conclure.cityrp.sender;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
 public interface SenderManager<SS> {
-    SenderMappingRegistry<SS> getRegistry();
 
     void message(Sender<? extends SS> sender, Component component);
 
@@ -12,12 +13,18 @@ public interface SenderManager<SS> {
 
     void actionBar(ActionBarSender<? extends SS> sender, Component component);
 
-    Sender<SS> asSender(SS sender);
+    void showBossBar(BossBarSender<? extends SS> sender, BossBar bossBar);
 
-    <R extends Sender<SS>> R asSender(SS sender, Transformer<SS,R> transformer);
+    void hideBossBar(BossBarSender<? extends SS> sender, BossBar bossBar);
+
+    void openBook(BookSender<? extends SS> sender, Book book);
+
+    void openBook(BookSender<? extends SS> sender, Book.Builder bookBuilder);
+
+    Sender<? extends SS> asSender(SS sender);
 
     @FunctionalInterface
-    interface Transformer<S,R extends Sender<S>> {
-        R transform(S sender);
+    interface Transformer<SS,R extends Sender<SS>> {
+        R transform(SS sender);
     }
 }

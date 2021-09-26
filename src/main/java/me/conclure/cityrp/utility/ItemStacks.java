@@ -2,9 +2,9 @@ package me.conclure.cityrp.utility;
 
 import me.conclure.cityrp.utility.function.Obj2IntResultFunction;
 import net.kyori.adventure.text.Component;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +24,7 @@ public final class ItemStacks extends Unconstructable {
     public static final ItemStack AIR_STACK = new UnmodifiableItemStack(Material.AIR);
 
     public static ItemStack copyAndEditNbt(ItemStack stack, Consumer<? super NBTTagCompound> consumer) {
-        net.minecraft.server.v1_16_R3.ItemStack nmsCopy = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.world.item.ItemStack nmsCopy = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsCopy.getOrCreateTag();
         consumer.accept(tag);
         return CraftItemStack.asCraftMirror(nmsCopy);

@@ -4,15 +4,34 @@ import me.conclure.cityrp.item.Item;
 import me.conclure.cityrp.utility.Key;
 import org.jspecify.nullness.Nullable;
 
-public interface ItemRepository {
+import java.util.Iterator;
+
+public interface ItemRepository<M> extends Iterable<Item> {
     @Nullable
-    Item addItem(Key key, Item item);
+    Item add(Key key, Item item);
 
     @Nullable
-    Item getItem(Key key);
+    Item get(Key key);
+
+    @Nullable
+    Item replace(Key key, Item item);
+
+    boolean contains(Key key);
+
+    boolean contains(Item key);
+
+    void remove(Key key);
+
+    void remove(Item item);
 
     @Nullable
     Key getKey(Item item);
 
-    MaterialItemLookup getMaterialLookup();
+    MaterialItemLookup<M> getMaterialLookup();
+
+    int size();
+
+    interface Iterator extends java.util.Iterator<Item> {
+        void replace(Item item);
+    }
 }

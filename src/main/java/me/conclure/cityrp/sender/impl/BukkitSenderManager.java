@@ -1,10 +1,14 @@
 package me.conclure.cityrp.sender.impl;
 
 import me.conclure.cityrp.sender.ActionBarSender;
+import me.conclure.cityrp.sender.BookSender;
+import me.conclure.cityrp.sender.BossBarSender;
+import me.conclure.cityrp.sender.PlayerSender;
 import me.conclure.cityrp.sender.Sender;
 import me.conclure.cityrp.sender.SenderManager;
-import me.conclure.cityrp.sender.SenderMappingRegistry;
 import me.conclure.cityrp.sender.TitleSender;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -13,17 +17,9 @@ import org.bukkit.entity.Player;
 
 public class BukkitSenderManager implements SenderManager<CommandSender> {
     private final BukkitAudiences bukkitAudiences;
-    private final SenderMappingRegistry<CommandSender> senderMappingRegistry;
 
-    public BukkitSenderManager(BukkitAudiences bukkitAudiences, SenderMappingRegistry<CommandSender> senderMappingRegistry) {
+    public BukkitSenderManager(BukkitAudiences bukkitAudiences) {
         this.bukkitAudiences = bukkitAudiences;
-        this.senderMappingRegistry = senderMappingRegistry;
-        senderMappingRegistry.add(Player.class,player -> new BukkitPlayerSender<>(player,this));
-    }
-
-    @Override
-    public SenderMappingRegistry<CommandSender> getRegistry() {
-        return this.senderMappingRegistry;
     }
 
     @Override
@@ -42,16 +38,30 @@ public class BukkitSenderManager implements SenderManager<CommandSender> {
     }
 
     @Override
-    public Sender<CommandSender> asSender(CommandSender sender) {
-        Sender<CommandSender> commandSender = this.senderMappingRegistry.get(sender.getClass(), sender);
-        if (commandSender == null) {
-            return new BukkitSender<>(sender);
-        }
-        return commandSender;
+    public void showBossBar(BossBarSender<? extends CommandSender> sender, BossBar bossBar) {
+        this.bukkitAudiences.sender(sender.delegate()).showBossBar(bossBar);
     }
 
     @Override
-    public <R extends Sender<CommandSender>> R asSender(CommandSender sender, Transformer<CommandSender,R> transformer) {
-        return transformer.transform(sender);
+    public void hideBossBar(BossBarSender<? extends CommandSender> sender, BossBar bossBar) {
+        this.bukkitAudiences.sender(sender.delegate()).hideBossBar(bossBar);
+    }
+
+    @Override
+    public void openBook(BookSender<? extends CommandSender> sender, Book book) {
+        this.bukkitAudiences.sender(sender.delegate()).openBook(book);
+    }
+
+    @Override
+    public void openBook(BookSender<? extends CommandSender> sender, Book.Builder bookBuilder) {
+        this.bukkitAudiences.sender(sender.delegate()).openBook(bookBuilder);
+    }
+
+    @Override
+    public Sender<? extends CommandSender> asSender(CommandSender sender) {
+        if (sender instanceof Player player) {
+            return new BukkitPlayerSender<>(player,this);
+        }
+        return new BukkitSender<>(sender);
     }
 }

@@ -15,7 +15,7 @@ import me.conclure.cityrp.item.ItemProperties;
 import me.conclure.cityrp.item.Items;
 import me.conclure.cityrp.item.rarity.Rarities;
 import me.conclure.cityrp.item.repository.MaterialItemLookup;
-import me.conclure.cityrp.item.repository.SimpleMaterialItemLookup;
+import me.conclure.cityrp.item.repository.BukkitMaterialItemLookup;
 import me.conclure.cityrp.listener.ConnectionListener;
 import me.conclure.cityrp.listener.GuiListener;
 import me.conclure.cityrp.listener.ItemOverrideListener;
@@ -36,6 +36,7 @@ import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.ItemAir;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -66,7 +67,7 @@ public class CityRPEntryPoint extends JavaPlugin {
     private final PositionDataManager positionDataManager;
 
     private final CommandDispatcher commandDispatcher;
-    private final AsynchronousCommandDispatcher<ExecutorService> asyncCommandDispatcher;
+    private final AsynchronousCommandDispatcher<CommandExecutor,ExecutorService> asyncCommandDispatcher;
 
     private CommandRepository commandRepository;
     private ItemRegistryGuiManager itemRegistryGuiManager;
@@ -87,7 +88,7 @@ public class CityRPEntryPoint extends JavaPlugin {
         this.taskCoordinator = new TaskCoordinator<>(forkJoinPool);
         this.bukkitTaskCoordinator = new BukkitTaskCoordinator(this, this.bukkitScheduler);
 
-        this.materialItemLookup = new SimpleMaterialItemLookup();
+        this.materialItemLookup = new BukkitMaterialItemLookup(itemRepository);
         this.positionDestinationDirectory = this.dataPath.resolve("positions");
         this.positionDataManager = new PositionDataManager(this.positionDestinationDirectory, this.taskCoordinator);
 
@@ -142,7 +143,7 @@ public class CityRPEntryPoint extends JavaPlugin {
 
     private void setupCommands() {
         this.commandRepository = new BukkitCommandRepository(this.logger, this.pluginManager, this, senderManager);
-        this.commandRepository.register(new SetpositionCommand(CommandInfo.<Player>newBuilder()
+        this.commandRepository.add(new SetpositionCommand(CommandInfo.<Player>newBuilder()
                 .name("setposition")
                 .aliases("testd")
                 .senderType(Player.class)

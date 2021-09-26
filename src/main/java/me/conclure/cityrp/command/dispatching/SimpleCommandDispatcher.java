@@ -15,7 +15,7 @@ public class SimpleCommandDispatcher<SS> implements CommandDispatcher<SS> {
     }
 
     @Override
-    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<SS> sender, String[] args) {
+    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<? extends SS> sender, String[] args) {
         Preconditions.checkNotNull(command);
         Preconditions.checkNotNull(sender);
         Preconditions.checkNotNull(args);

@@ -5,5 +5,5 @@ import me.conclure.cityrp.sender.Sender;
 
 public interface CommandDispatcher<SS> {
 
-    void dispatch(Command<? extends Sender<SS>,SS> command, Sender<SS> sender, String[] args);
+    void dispatch(Command<? extends Sender<SS>,SS> command, Sender<? extends SS> sender, String[] args);
 }

@@ -17,7 +17,7 @@ import me.conclure.cityrp.utility.Key;
 import me.conclure.cityrp.utility.collections.MoreCollections;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -174,7 +174,7 @@ public class Item {
 
     private static void editNbt(NBTTagCompound tag, Item item) {
         if (item.isUnstackable) {
-            tag.setUUID(UNSTACKABLE_KEY, UUID.randomUUID());
+            tag.a(UNSTACKABLE_KEY, UUID.randomUUID());
         }
         tag.setString(UNIQUE_KEY, item.getKey().toString());
     }

@@ -31,7 +31,7 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
     }
 
     @Override
-    public void injectCommands() {
+    public void registerContainedCommands() {
         CommandInjector commandInjector = this.commandInjector.get();
         for (Command<? extends Sender<CommandSender>,CommandSender> command : this.commandMap.values()) {
             commandInjector.inject(command);
@@ -51,7 +51,7 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
     }
 
     @Override
-    public <S extends Sender<CommandSender>> void register(Command<S,CommandSender> command) {
+    public <S extends Sender<CommandSender>> void add(Command<S,CommandSender> command) {
         CommandInfo<S,CommandSender> info = command.getInfo();
         String name = info.getName();
         this.commandMap.put(name, command);

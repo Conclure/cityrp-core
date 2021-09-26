@@ -24,8 +24,8 @@ import me.conclure.cityrp.gui.ProfileGuiManager;
 import me.conclure.cityrp.item.Item;
 import me.conclure.cityrp.item.repository.ItemRepository;
 import me.conclure.cityrp.item.repository.MaterialItemLookup;
-import me.conclure.cityrp.item.repository.SimpleItemRepository;
-import me.conclure.cityrp.item.repository.SimpleMaterialItemLookup;
+import me.conclure.cityrp.item.repository.BukkitItemRepository;
+import me.conclure.cityrp.item.repository.BukkitMaterialItemLookup;
 import me.conclure.cityrp.listener.ConnectionListener;
 import me.conclure.cityrp.listener.GuiListener;
 import me.conclure.cityrp.listener.ItemOverrideListener;
@@ -33,10 +33,8 @@ import me.conclure.cityrp.listener.ItemRegistryGuiListener;
 import me.conclure.cityrp.listener.PositionRegistryGuiListener;
 import me.conclure.cityrp.listener.ProfileGuiListener;
 import me.conclure.cityrp.sender.PlayerSender;
-import me.conclure.cityrp.sender.Sender;
 import me.conclure.cityrp.sender.SenderManager;
 import me.conclure.cityrp.sender.impl.BukkitSenderManager;
-import me.conclure.cityrp.sender.impl.BukkitSenderMappingRegistry;
 import me.conclure.cityrp.utility.Key;
 import me.conclure.cityrp.utility.MoreFiles;
 import me.conclure.cityrp.utility.concurrent.BukkitTaskCoordinator;
@@ -44,9 +42,9 @@ import me.conclure.cityrp.utility.concurrent.TaskCoordinator;
 import me.conclure.cityrp.utility.logging.DelegatedSlf4jLogger;
 import me.conclure.cityrp.utility.logging.Logger;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -57,6 +55,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -75,7 +74,7 @@ public class PluginLifecycle implements Lifecycle {
     private final TaskCoordinator<ExecutorService> taskCoordinator;
     private final BukkitTaskCoordinator bukkitTaskCoordinator;
 
-    private final ItemRepository itemRepository;
+    private final ItemRepository<Material> itemRepository;
 
     private final SenderManager<CommandSender> senderManager;
     private final CommandDispatcher<CommandSender> commandDispatcher;
@@ -119,17 +118,16 @@ public class PluginLifecycle implements Lifecycle {
         this.itemRepository = this.newItemRepository();
 
         this.commandDispatcher = this.newCommandDispatcher(this.logger);
-        this.asyncCommandDispatcher = this.newAsynchronousCommandDispatcher(forkJoinPool,this.commandDispatcher);
+        this.asyncCommandDispatcher = this.newAsynchronousCommandDispatcher(this.taskCoordinator,this.commandDispatcher);
         this.senderManager = this.newSenderManager();
         this.commandRepository = this.newCommandRepository(this.logger,this.senderManager);
     }
 
-    private ItemRepository newItemRepository() {
+    private ItemRepository<Material> newItemRepository() {
         BiMap<Key, Item> map = HashBiMap.create();
         Int2ObjectMap<Key> idMap = new Int2ObjectOpenHashMap<>();
         Object2IntMap<Key> keyMap = new Object2IntOpenHashMap<>();
-        MaterialItemLookup materialItemLookup = new SimpleMaterialItemLookup();
-        return new SimpleItemRepository(map, idMap, keyMap, materialItemLookup);
+        return new BukkitItemRepository(map, idMap, keyMap);
     }
 
     private PathRegistry newPathRegistry() {
@@ -166,8 +164,11 @@ public class PluginLifecycle implements Lifecycle {
         return new SimpleCommandDispatcher<>(logger);
     }
 
-    private CommandDispatcher<CommandSender> newAsynchronousCommandDispatcher(ExecutorService pool, CommandDispatcher<CommandSender> commandDispatcher) {
-        return new AsynchronousCommandDispatcher<>(pool, commandDispatcher);
+    private CommandDispatcher<CommandSender> newAsynchronousCommandDispatcher(
+            TaskCoordinator<? extends Executor> taskCoordinator,
+            CommandDispatcher<CommandSender> commandDispatcher
+    ) {
+        return new AsynchronousCommandDispatcher<>(commandDispatcher,taskCoordinator);
     }
 
     private CommandRepository<CommandSender> newCommandRepository(Logger logger, SenderManager<CommandSender> senderManager) {
@@ -176,8 +177,7 @@ public class PluginLifecycle implements Lifecycle {
 
     private SenderManager<CommandSender> newSenderManager() {
         BukkitAudiences audiences = BukkitAudiences.create(this.plugin);
-        BukkitSenderMappingRegistry mappingRegistry = new BukkitSenderMappingRegistry();
-        return new BukkitSenderManager(audiences, mappingRegistry);
+        return new BukkitSenderManager(audiences);
     }
 
     private Path getFolderPath() {
@@ -209,8 +209,8 @@ public class PluginLifecycle implements Lifecycle {
                 .permission("crp.admin")
                 .build());
 
-        this.commandRepository.register(setpositionCommand);
-        this.commandRepository.injectCommands();
+        this.commandRepository.add(setpositionCommand);
+        this.commandRepository.registerContainedCommands();
     }
 
     private Stream<Listener> streamListeners() {

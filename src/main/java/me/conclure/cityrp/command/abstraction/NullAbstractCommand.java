@@ -10,7 +10,7 @@ public abstract class NullAbstractCommand<S extends Sender<SS>,SS> extends Abstr
     }
 
     @Override
-    public void run(Sender<SS> sender, String[] arguments) {
+    public void run(Sender<? extends SS> sender, String[] arguments) {
         AbstractCommand.run0(this, sender, arguments, this::execute);
     }
 
