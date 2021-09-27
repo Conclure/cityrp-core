@@ -57,16 +57,16 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
 
     @Override
     public CompletableFuture<Void> loadAll() {
-        return this.applyAllPositionsToFuture(this::loadData);
+        return this.applyAllPositionsToFuture(this::load);
     }
 
     @Override
     public CompletableFuture<Void> saveAll() {
-        return this.applyAllPositionsToFuture(this::saveData);
+        return this.applyAllPositionsToFuture(this::save);
     }
 
     @Override
-    public CompletableFuture<Boolean> loadData(Position<E,W> position) {
+    public CompletableFuture<Boolean> load(Position<E,W> position) {
         return this.taskCoordinator.supply(() -> {
             try {
                 Lock lock = this.ioLocks.get(position);
@@ -114,7 +114,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
     }
 
     @Override
-    public CompletableFuture<Boolean> saveData(Position<E,W> position) {
+    public CompletableFuture<Boolean> save(Position<E,W> position) {
         return this.taskCoordinator.supply(() -> {
             try {
                 Path path = this.destinationDirectory.resolve(position.getKey() + ".json");

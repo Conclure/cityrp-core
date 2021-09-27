@@ -20,13 +20,6 @@ public class SimplePathRegistry implements PathRegistry {
     }
 
     @Override
-    public void set(Key key, Path path) {
-        Preconditions.checkNotNull(key);
-
-        this.map.put(key, path);
-    }
-
-    @Override
     @Nullable
     public Path get(Key key) {
         Preconditions.checkNotNull(key);

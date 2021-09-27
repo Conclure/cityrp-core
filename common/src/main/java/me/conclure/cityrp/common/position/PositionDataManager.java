@@ -8,7 +8,7 @@ public interface PositionDataManager<E,W> {
 
     CompletableFuture<Void> saveAll();
 
-    CompletableFuture<Boolean> loadData(Position<E,W> position);
+    CompletableFuture<Boolean> load(Position<E,W> position);
 
-    CompletableFuture<Boolean> saveData(Position<E,W> position);
+    CompletableFuture<Boolean> save(Position<E,W> position);
 }

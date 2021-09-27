@@ -259,7 +259,7 @@ public class PaperLifecycle implements PluginLifecycle {
                 .add(new PositionRegistryGuiListener(this.positionRegistryGuiManager))
                 .add(new ItemRegistryGuiListener(this.itemRegistryGuiManager))
                 .add(new ProfileGuiListener(this.profileGuiManager))
-                .add(new ConnectionListener())
+                .add(new ConnectionListener(positionRegistry))
                 .add(new GuiListener())
                 .build();
     }
