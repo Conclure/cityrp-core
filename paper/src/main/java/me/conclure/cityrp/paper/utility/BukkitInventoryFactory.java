@@ -14,7 +14,7 @@ public class BukkitInventoryFactory implements InventoryFactory<Inventory, Inven
     }
 
     @Override
-    public Inventory createInventory(InventoryHolder holder, int rows, Component title) {
+    public Inventory create(InventoryHolder holder, int rows, Component title) {
         return this.server.createInventory(holder,rows*9,title);
     }
 }

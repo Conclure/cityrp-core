@@ -1,4 +1,4 @@
-package me.conclure.cityrp.paper.data.paths;
+package me.conclure.cityrp.common.data.paths;
 
 import me.conclure.cityrp.common.utility.Key;
 import org.jspecify.nullness.Nullable;

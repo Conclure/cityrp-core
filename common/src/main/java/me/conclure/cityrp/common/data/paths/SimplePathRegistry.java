@@ -1,4 +1,4 @@
-package me.conclure.cityrp.paper.data.paths;
+package me.conclure.cityrp.common.data.paths;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -8,7 +8,6 @@ import org.jspecify.nullness.Nullable;
 
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.Map;
 
 public class SimplePathRegistry implements PathRegistry {
     private final ImmutableMap<Key, Path> map;

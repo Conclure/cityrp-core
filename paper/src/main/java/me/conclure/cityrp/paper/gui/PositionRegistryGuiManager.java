@@ -82,7 +82,7 @@ public class PositionRegistryGuiManager {
             PositionRegistry<Entity, World> positionRegistry = PositionRegistryGuiManager.this.positionRegistry;
 
             String content = "Position Registry (" + page + "/" + maxPages + ")";
-            this.inventory = inventoryFactory.createInventory(this, 6, Component.text(content));
+            this.inventory = inventoryFactory.create(this, 6, Component.text(content));
             this.itemList = new Position[ITEMS_PER_PAGE];
 
             for (int i = (page - 1) * ITEMS_PER_PAGE; i < page * ITEMS_PER_PAGE; i++) {

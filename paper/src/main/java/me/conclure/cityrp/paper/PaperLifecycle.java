@@ -20,9 +20,9 @@ import me.conclure.cityrp.common.position.Positions;
 import me.conclure.cityrp.common.sender.SenderManager;
 import me.conclure.cityrp.common.utility.Permissions;
 import me.conclure.cityrp.paper.command.repository.BukkitCommandRepository;
-import me.conclure.cityrp.paper.data.paths.PathRegistry;
-import me.conclure.cityrp.paper.data.paths.Paths;
-import me.conclure.cityrp.paper.data.paths.SimplePathRegistry;
+import me.conclure.cityrp.common.data.paths.PathRegistry;
+import me.conclure.cityrp.common.data.paths.Paths;
+import me.conclure.cityrp.common.data.paths.SimplePathRegistry;
 import me.conclure.cityrp.paper.gui.ItemRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.PositionRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.ProfileGuiManager;
@@ -148,10 +148,16 @@ public class PaperLifecycle implements PluginLifecycle {
     }
 
     private PathRegistry newPathRegistry() {
-        Path pluginFolderPath = this.plugin.getDataFolder().toPath().toAbsolutePath();
+        Path pluginFolder = this.plugin.getDataFolder().toPath().toAbsolutePath();
+        Path users = pluginFolder.resolve("users");
+        Path positions = pluginFolder.resolve("positions");
+        Path characters = pluginFolder.resolve("characters");
+
         return new SimplePathRegistry.Builder()
-                .add(Paths.PLUGIN_FOLDER,pluginFolderPath)
-                .add(Paths.POSITIONS,pluginFolderPath.resolve("positions"))
+                .add(Paths.PLUGIN_FOLDER,pluginFolder)
+                .add(Paths.POSITIONS, positions)
+                .add(Paths.CHARACTERS, characters)
+                .add(Paths.USERS, users)
                 .build();
     }
 
@@ -259,7 +265,7 @@ public class PaperLifecycle implements PluginLifecycle {
                 .add(new PositionRegistryGuiListener(this.positionRegistryGuiManager))
                 .add(new ItemRegistryGuiListener(this.itemRegistryGuiManager))
                 .add(new ProfileGuiListener(this.profileGuiManager))
-                .add(new ConnectionListener(positionRegistry))
+                .add(new ConnectionListener(this.positionRegistry))
                 .add(new GuiListener())
                 .build();
     }
@@ -278,7 +284,7 @@ public class PaperLifecycle implements PluginLifecycle {
         this.setupCommands();
 
         this.itemRegistryGuiManager = new ItemRegistryGuiManager();
-        this.positionRegistryGuiManager = new PositionRegistryGuiManager(positionRegistry, inventoryFactory);
+        this.positionRegistryGuiManager = new PositionRegistryGuiManager(this.positionRegistry, this.inventoryFactory);
         this.profileGuiManager = new ProfileGuiManager(this.itemRegistryGuiManager, this.positionRegistryGuiManager);
 
         this.setupListeners();
