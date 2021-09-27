@@ -2,17 +2,20 @@ package me.conclure.cityrp.utility.collections;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class MoreCollections {
     public static final Multimap EMPTY_MULTIMAP = new EmptyMultimap<>();
     public static final Multiset EMPTY_MULTISET = new EmptyMultiset<>();
 
-    public static <K,V> Multimap<K,V> emptyMultimap() {
+    public static <K, V> Multimap<K, V> emptyMultimap() {
         return EMPTY_MULTIMAP;
     }
 
@@ -20,7 +23,7 @@ public class MoreCollections {
         return EMPTY_MULTISET;
     }
 
-    private static class EmptyMultimap<K,V> implements Multimap<K,V> {
+    private static class EmptyMultimap<K, V> implements Multimap<K, V> {
 
         @Override
         public int size() {

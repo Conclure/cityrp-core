@@ -45,7 +45,7 @@ public class GuiCell {
         }
 
         GuiCell build(int slot) {
-            return new GuiCell(slot,this.clickAction,this.itemStackFactory);
+            return new GuiCell(slot, this.clickAction, this.itemStackFactory);
         }
     }
 }

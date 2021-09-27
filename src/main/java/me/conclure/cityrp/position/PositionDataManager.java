@@ -18,7 +18,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,7 +42,7 @@ public class PositionDataManager {
                 .build(key -> new ReentrantLock(true));
     }
 
-    private static <T> CompletableFuture<Void> applyAllPositionsToFuture(Function<Position,CompletableFuture<T>> function) {
+    private static <T> CompletableFuture<Void> applyAllPositionsToFuture(Function<Position, CompletableFuture<T>> function) {
         CompletableFuture<?>[] futures = Registries.POSITIONS.stream()
                 .map(function)
                 .toArray(CompletableFuture[]::new);

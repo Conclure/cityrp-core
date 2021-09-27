@@ -1,6 +1,10 @@
-package me.conclure.cityrp.command;
+package me.conclure.cityrp.command.repository;
 
 import com.google.common.base.Preconditions;
+import me.conclure.cityrp.command.Command;
+import me.conclure.cityrp.command.dispatching.CommandDispatcher;
+import me.conclure.cityrp.sender.Sender;
+import me.conclure.cityrp.sender.SenderManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.PluginManager;
@@ -10,11 +14,13 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class CommandInjector {
-    private final SimpleCommandMap commandMap;
-    private final String fallbackPrefix;
+final class CommandInjector {
+    final SimpleCommandMap commandMap;
+    final String fallbackPrefix;
+    final SenderManager<CommandSender> senderManager;
 
-    public CommandInjector(PluginManager pluginManager, String fallbackPrefix) {
+    CommandInjector(PluginManager pluginManager, String fallbackPrefix, SenderManager<CommandSender> senderManager) {
+        this.senderManager = senderManager;
         Preconditions.checkNotNull(pluginManager);
         Preconditions.checkArgument(pluginManager instanceof SimplePluginManager);
         Preconditions.checkNotNull(fallbackPrefix);
@@ -39,22 +45,26 @@ public class CommandInjector {
         }
     }
 
-    public <S extends CommandSender> void inject(Command<S> command) {
+    <S extends Sender<CommandSender>> void inject(Command<S,CommandSender> command) {
         Preconditions.checkNotNull(command);
+
         this.commandMap.register(this.fallbackPrefix, new InjectedCommand<>(command));
     }
 
-    static class InjectedCommand<S extends CommandSender> extends org.bukkit.command.Command {
-        final Command<S> command;
+    class InjectedCommand<S extends Sender<CommandSender>> extends org.bukkit.command.Command {
+        final Command<S,CommandSender> command;
 
-        InjectedCommand(Command<S> command) {
+        InjectedCommand(Command<S,CommandSender> command) {
             super(command.getInfo().getName());
             this.command = command;
         }
 
         @Override
         public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-            this.command.getInfo().getCommandDispatcher().dispatch(this.command,commandSender,strings);
+            CommandDispatcher<CommandSender> dispatcher = this.command.getInfo().getCommandDispatcher();
+            Sender<? extends CommandSender> sender = CommandInjector.this.senderManager.asSender(commandSender);
+
+            dispatcher.dispatch(this.command, sender, strings);
             return true;
         }
 

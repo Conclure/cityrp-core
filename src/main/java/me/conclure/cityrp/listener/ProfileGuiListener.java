@@ -1,7 +1,6 @@
 package me.conclure.cityrp.listener;
 
 import me.conclure.cityrp.gui.ProfileGuiManager;
-import me.conclure.cityrp.gui.framework.Gui;
 import me.conclure.cityrp.item.Item;
 import me.conclure.cityrp.utility.ItemStacks;
 import net.kyori.adventure.text.Component;
@@ -11,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.SkullMeta;

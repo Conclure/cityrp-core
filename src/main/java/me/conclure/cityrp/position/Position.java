@@ -14,11 +14,11 @@ public class Position {
         return this.location != null;
     }
 
-    public void setLocation(ImmutableLocation location) {
-        this.location = location;
-    }
-
     public ImmutableLocation getLocation() {
         return this.location;
+    }
+
+    public void setLocation(ImmutableLocation location) {
+        this.location = location;
     }
 }

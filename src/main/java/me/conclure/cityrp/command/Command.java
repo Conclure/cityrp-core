@@ -1,16 +1,17 @@
 package me.conclure.cityrp.command;
 
+import me.conclure.cityrp.sender.Sender;
 import org.bukkit.command.CommandSender;
 
-public interface Command<S extends CommandSender> {
-    boolean acceptsSender(CommandSender sender);
+public interface Command<S extends Sender<SS>,SS> {
+    boolean acceptsSender(Sender<? extends SS> sender);
 
-    boolean acceptsSenderType(Class<? extends CommandSender> type);
+    boolean acceptsSenderType(Class<? extends Sender<? extends SS>> type);
 
-    boolean hasPermission(CommandSender sender);
+    boolean hasPermission(Sender<? extends SS> sender);
 
-    CommandInfo<S> getInfo();
+    CommandInfo<S,SS> getInfo();
 
-    void run(CommandSender sender, String[] arguments);
+    void run(Sender<? extends SS> sender, String[] arguments);
 
 }
