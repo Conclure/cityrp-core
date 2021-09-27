@@ -5,6 +5,7 @@ dependencies {
     api("org.spongepowered:configurate-jackson:4.1.2")
     api("net.kyori:adventure-platform-bukkit:4.0.0")
     api("com.github.ben-manes.caffeine:caffeine:3.0.4")
+    api("com.google.guava:guava:21.0")
     compileOnlyApi("org.jspecify:jspecify:0.2.0")
 }
 

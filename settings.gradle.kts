@@ -1,3 +1,3 @@
 rootProject.name = "cityrp-core"
 
-include(":common",":bukkit")
+include(":common",":paper")
