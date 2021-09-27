@@ -3,9 +3,9 @@ package me.conclure.cityrp.paper.gui;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.base.Preconditions;
-import me.conclure.cityrp.common.utility.InventoryFactory;
 import me.conclure.cityrp.common.position.Position;
 import me.conclure.cityrp.common.position.PositionRegistry;
+import me.conclure.cityrp.common.utility.InventoryFactory;
 import me.conclure.cityrp.paper.gui.framework.OpenableInventoryHolder;
 import me.conclure.cityrp.paper.item.Items;
 import net.kyori.adventure.text.Component;
@@ -72,7 +72,7 @@ public class PositionRegistryGuiManager {
         public static final int PREVIOUS_SLOT = 45;
 
         final Inventory inventory;
-        final Position<Entity,World>[] itemList;
+        final Position<Entity, World>[] itemList;
         final int page;
 
         GuiPage(int page) {
@@ -87,7 +87,7 @@ public class PositionRegistryGuiManager {
 
             for (int i = (page - 1) * ITEMS_PER_PAGE; i < page * ITEMS_PER_PAGE; i++) {
                 int slot = i - (page - 1) * ITEMS_PER_PAGE;
-                Position<Entity,World> item = positionRegistry.getById(i);
+                Position<Entity, World> item = positionRegistry.getById(i);
                 if (item == null) {
                     break;
                 }
@@ -100,7 +100,7 @@ public class PositionRegistryGuiManager {
             return this.page;
         }
 
-        public Position<Entity,World> getPosition(int slot) {
+        public Position<Entity, World> getPosition(int slot) {
             return this.itemList[slot];
         }
 

@@ -3,14 +3,15 @@ package me.conclure.cityrp.paper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import me.conclure.cityrp.common.utility.WorldObtainer;
 import me.conclure.cityrp.common.command.CommandInfo;
 import me.conclure.cityrp.common.command.commands.SetpositionCommand;
 import me.conclure.cityrp.common.command.dispatching.AsynchronousCommandDispatcher;
 import me.conclure.cityrp.common.command.dispatching.CommandDispatcher;
 import me.conclure.cityrp.common.command.dispatching.SimpleCommandDispatcher;
 import me.conclure.cityrp.common.command.repository.CommandRepository;
-import me.conclure.cityrp.common.utility.InventoryFactory;
+import me.conclure.cityrp.common.data.paths.PathRegistry;
+import me.conclure.cityrp.common.data.paths.Paths;
+import me.conclure.cityrp.common.data.paths.SimplePathRegistry;
 import me.conclure.cityrp.common.plugin.PluginLifecycle;
 import me.conclure.cityrp.common.position.JsonPositionDataManager;
 import me.conclure.cityrp.common.position.PositionDataManager;
@@ -18,17 +19,20 @@ import me.conclure.cityrp.common.position.PositionInfo;
 import me.conclure.cityrp.common.position.PositionRegistry;
 import me.conclure.cityrp.common.position.Positions;
 import me.conclure.cityrp.common.sender.SenderManager;
+import me.conclure.cityrp.common.utility.InventoryFactory;
+import me.conclure.cityrp.common.utility.Key;
+import me.conclure.cityrp.common.utility.MoreFiles;
 import me.conclure.cityrp.common.utility.Permissions;
+import me.conclure.cityrp.common.utility.WorldObtainer;
+import me.conclure.cityrp.common.utility.concurrent.TaskCoordinator;
+import me.conclure.cityrp.common.utility.logging.Logger;
 import me.conclure.cityrp.paper.command.repository.BukkitCommandRepository;
-import me.conclure.cityrp.common.data.paths.PathRegistry;
-import me.conclure.cityrp.common.data.paths.Paths;
-import me.conclure.cityrp.common.data.paths.SimplePathRegistry;
 import me.conclure.cityrp.paper.gui.ItemRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.PositionRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.ProfileGuiManager;
 import me.conclure.cityrp.paper.item.Item;
-import me.conclure.cityrp.paper.item.repository.ItemRepository;
 import me.conclure.cityrp.paper.item.repository.BukkitItemRepository;
+import me.conclure.cityrp.paper.item.repository.ItemRepository;
 import me.conclure.cityrp.paper.listener.ConnectionListener;
 import me.conclure.cityrp.paper.listener.GuiListener;
 import me.conclure.cityrp.paper.listener.ItemOverrideListener;
@@ -38,15 +42,11 @@ import me.conclure.cityrp.paper.listener.ProfileGuiListener;
 import me.conclure.cityrp.paper.position.BukkitPosition;
 import me.conclure.cityrp.paper.position.BukkitPositionRegistry;
 import me.conclure.cityrp.paper.sender.BukkitSenderManager;
-import me.conclure.cityrp.common.utility.Key;
-import me.conclure.cityrp.common.utility.MoreFiles;
 import me.conclure.cityrp.paper.utility.BukkitInventoryFactory;
+import me.conclure.cityrp.paper.utility.BukkitWorldObtainer;
 import me.conclure.cityrp.paper.utility.TypeTokens;
 import me.conclure.cityrp.paper.utility.concurrent.BukkitTaskCoordinator;
-import me.conclure.cityrp.common.utility.concurrent.TaskCoordinator;
 import me.conclure.cityrp.paper.utility.logger.DelegatedSlf4jLogger;
-import me.conclure.cityrp.common.utility.logging.Logger;
-import me.conclure.cityrp.paper.utility.BukkitWorldObtainer;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -93,7 +93,7 @@ public class PaperLifecycle implements PluginLifecycle {
     private final CommandDispatcher<CommandSender> asyncCommandDispatcher;
     private CommandRepository<CommandSender> commandRepository;
 
-    private PositionDataManager<Entity,World> positionDataManager;
+    private PositionDataManager<Entity, World> positionDataManager;
     private PositionRegistry<Entity, World> positionRegistry;
 
     private ItemRegistryGuiManager itemRegistryGuiManager;
@@ -137,7 +137,7 @@ public class PaperLifecycle implements PluginLifecycle {
         this.itemRepository = this.newItemRepository();
 
         this.commandDispatcher = this.newCommandDispatcher(this.logger);
-        this.asyncCommandDispatcher = this.newAsynchronousCommandDispatcher(this.taskCoordinator,this.commandDispatcher);
+        this.asyncCommandDispatcher = this.newAsynchronousCommandDispatcher(this.taskCoordinator, this.commandDispatcher);
     }
 
     private ItemRepository<Material> newItemRepository() {
@@ -154,7 +154,7 @@ public class PaperLifecycle implements PluginLifecycle {
         Path characters = pluginFolder.resolve("characters");
 
         return new SimplePathRegistry.Builder()
-                .add(Paths.PLUGIN_FOLDER,pluginFolder)
+                .add(Paths.PLUGIN_FOLDER, pluginFolder)
                 .add(Paths.POSITIONS, positions)
                 .add(Paths.CHARACTERS, characters)
                 .add(Paths.USERS, users)
@@ -191,7 +191,7 @@ public class PaperLifecycle implements PluginLifecycle {
             TaskCoordinator<? extends Executor> taskCoordinator,
             CommandDispatcher<CommandSender> commandDispatcher
     ) {
-        return new AsynchronousCommandDispatcher<>(commandDispatcher,taskCoordinator);
+        return new AsynchronousCommandDispatcher<>(commandDispatcher, taskCoordinator);
     }
 
     private SenderManager<CommandSender> newSenderManager() {
@@ -253,7 +253,7 @@ public class PaperLifecycle implements PluginLifecycle {
 
         this.commandRepository = new BukkitCommandRepository.Builder()
                 .add(setpositionCommand)
-                .build(this.logger,this.pluginManager,this.plugin,this.senderManager);
+                .build(this.logger, this.pluginManager, this.plugin, this.senderManager);
 
 
         this.commandRepository.registerContainedCommands();

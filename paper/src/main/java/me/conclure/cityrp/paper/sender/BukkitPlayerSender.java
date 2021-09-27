@@ -19,36 +19,36 @@ public class BukkitPlayerSender<SS extends Player> extends BukkitSender<SS> impl
 
     @Override
     public void sendMessage(Component component) {
-        this.senderManager.message(this,component);
+        this.senderManager.message(this, component);
     }
 
     @Override
     public void sendActionBar(Component component) {
-        this.senderManager.actionBar(this,component);
+        this.senderManager.actionBar(this, component);
     }
 
     @Override
     public void sendTitle(Title title) {
-        this.senderManager.title(this,title);
+        this.senderManager.title(this, title);
     }
 
     @Override
     public void showBossBar(BossBar bossBar) {
-        this.senderManager.showBossBar(this,bossBar);
+        this.senderManager.showBossBar(this, bossBar);
     }
 
     @Override
     public void hideBossBar(BossBar bossBar) {
-        this.senderManager.hideBossBar(this,bossBar);
+        this.senderManager.hideBossBar(this, bossBar);
     }
 
     @Override
     public void openBook(Book book) {
-        this.senderManager.openBook(this,book);
+        this.senderManager.openBook(this, book);
     }
 
     @Override
     public void openBook(Book.Builder bookBuilder) {
-        this.senderManager.openBook(this,bookBuilder);
+        this.senderManager.openBook(this, bookBuilder);
     }
 }

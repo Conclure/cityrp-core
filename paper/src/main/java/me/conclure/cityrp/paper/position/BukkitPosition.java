@@ -27,7 +27,7 @@ public class BukkitPosition extends AbstractPosition<Entity, World> {
             return null;
         }
 
-        return new Location(world,this.getX(),this.getY(),this.getZ(),this.getPitch(),this.getYaw());
+        return new Location(world, this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BukkitPosition extends AbstractPosition<Entity, World> {
             return false;
         }
 
-        return entity.teleport(location,PlayerTeleportEvent.TeleportCause.PLUGIN);
+        return entity.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     @Override

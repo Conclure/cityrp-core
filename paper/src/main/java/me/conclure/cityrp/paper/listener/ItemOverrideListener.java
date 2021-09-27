@@ -1,9 +1,9 @@
 package me.conclure.cityrp.paper.listener;
 
 import com.google.common.base.Preconditions;
+import me.conclure.cityrp.common.utility.Key;
 import me.conclure.cityrp.paper.item.repository.MaterialItemLookup;
 import me.conclure.cityrp.paper.utility.ItemStacks;
-import me.conclure.cityrp.common.utility.Key;
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;

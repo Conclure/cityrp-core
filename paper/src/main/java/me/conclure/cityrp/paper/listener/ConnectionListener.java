@@ -36,7 +36,7 @@ public class ConnectionListener implements Listener {
     }
 
     private <E extends PlayerEvent & Cancellable> void cancelPlayerEventIfContained(E event) {
-        this.cancelEventIfContained(event,event.getPlayer());
+        this.cancelEventIfContained(event, event.getPlayer());
     }
 
     @EventHandler
@@ -46,7 +46,7 @@ public class ConnectionListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        this.cancelEventIfContained(event,event.getPlayer());
+        this.cancelEventIfContained(event, event.getPlayer());
     }
 
     @EventHandler

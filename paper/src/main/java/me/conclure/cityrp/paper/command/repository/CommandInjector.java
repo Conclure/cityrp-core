@@ -45,16 +45,22 @@ final class CommandInjector {
         }
     }
 
-    <S extends Sender<CommandSender>> void inject(Command<S,CommandSender> command) {
+    <S extends Sender<CommandSender>> void inject(Command<S, CommandSender> command) {
         Preconditions.checkNotNull(command);
 
         this.commandMap.register(this.fallbackPrefix, new InjectedCommand<>(command));
     }
 
-    class InjectedCommand<S extends Sender<CommandSender>> extends org.bukkit.command.Command {
-        final Command<S,CommandSender> command;
+    static class FailedInstantiationException extends RuntimeException {
+        FailedInstantiationException(Throwable cause) {
+            super(cause);
+        }
+    }
 
-        InjectedCommand(Command<S,CommandSender> command) {
+    class InjectedCommand<S extends Sender<CommandSender>> extends org.bukkit.command.Command {
+        final Command<S, CommandSender> command;
+
+        InjectedCommand(Command<S, CommandSender> command) {
             super(command.getInfo().getName());
             this.command = command;
         }
@@ -71,12 +77,6 @@ final class CommandInjector {
         @Override
         public @NotNull List<String> getAliases() {
             return this.command.getInfo().getAliases();
-        }
-    }
-
-    static class FailedInstantiationException extends RuntimeException {
-        FailedInstantiationException(Throwable cause) {
-            super(cause);
         }
     }
 }

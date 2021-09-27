@@ -2,8 +2,8 @@ package me.conclure.cityrp.paper.item.repository;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
-import me.conclure.cityrp.paper.item.Item;
 import me.conclure.cityrp.common.utility.Key;
+import me.conclure.cityrp.paper.item.Item;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Material;
 import org.jspecify.nullness.Nullable;
@@ -14,16 +14,16 @@ import java.util.function.Consumer;
 
 public class BukkitItemRepository implements ItemRepository<Material> {
     private final BiMap<Key, Item> map;
-    private final ConcurrentMap<Integer,Key> idMap;
-    private final ConcurrentMap<Key,Integer> keyMap;
+    private final ConcurrentMap<Integer, Key> idMap;
+    private final ConcurrentMap<Key, Integer> keyMap;
     private final MutableInt idTracker;
     private final MaterialItemLookup<Material> materialItemLookup;
     private final AtomicBoolean isOperating;
 
     public BukkitItemRepository(
             BiMap<Key, Item> map,
-            ConcurrentMap<Integer,Key> idMap,
-            ConcurrentMap<Key,Integer> keyMap
+            ConcurrentMap<Integer, Key> idMap,
+            ConcurrentMap<Key, Integer> keyMap
     ) {
         Preconditions.checkNotNull(map);
         Preconditions.checkNotNull(idMap);
@@ -45,8 +45,8 @@ public class BukkitItemRepository implements ItemRepository<Material> {
         Item oldItem = this.map.put(key, item);
 
         int id = this.idTracker.intValue();
-        this.idMap.put(id,key);
-        this.keyMap.put(key,id);
+        this.idMap.put(id, key);
+        this.keyMap.put(key, id);
 
         return oldItem;
     }

@@ -1,7 +1,7 @@
 package me.conclure.cityrp.paper.item;
 
-import me.conclure.cityrp.paper.item.rarity.Rarities;
 import me.conclure.cityrp.common.utility.Key.Id;
+import me.conclure.cityrp.paper.item.rarity.Rarities;
 import org.bukkit.Material;
 
 import java.util.function.UnaryOperator;

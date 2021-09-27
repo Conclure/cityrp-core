@@ -59,7 +59,7 @@ public class BukkitSenderManager implements SenderManager<CommandSender> {
     @Override
     public Sender<? extends CommandSender> asSender(CommandSender sender) {
         if (sender instanceof Player player) {
-            return new BukkitPlayerSender<>(player,this);
+            return new BukkitPlayerSender<>(player, this);
         }
         return new BukkitSender<>(sender);
     }
