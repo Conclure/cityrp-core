@@ -13,14 +13,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class ConnectionListener implements Listener {
-    private final Set<Player> playersMenuModeSet = new HashSet<>();
+    private final Set<UUID> playersMenuModeSet = new HashSet<>();
     private final PositionRegistry<Entity, World> positionRegistry;
 
     public ConnectionListener(PositionRegistry<Entity, World> positionRegistry) {
@@ -28,7 +30,7 @@ public class ConnectionListener implements Listener {
     }
 
     private <E extends Event & Cancellable> void cancelEventIfContained(E event, Player player) {
-        if (this.playersMenuModeSet.contains(player)) {
+        if (this.playersMenuModeSet.contains(player.getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -48,15 +50,19 @@ public class ConnectionListener implements Listener {
     }
 
     @EventHandler
+    public void onLogin(PlayerLoginEvent event) {
+        this.playersMenuModeSet.add(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        this.playersMenuModeSet.add(player);
         Position<Entity, World> spawn = this.positionRegistry.getByKey(Positions.SPAWN);
-        spawn.teleport(player);
+        spawn.teleportAsync(player);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        this.playersMenuModeSet.remove(event.getPlayer());
+        this.playersMenuModeSet.remove(event.getPlayer().getUniqueId());
     }
 }

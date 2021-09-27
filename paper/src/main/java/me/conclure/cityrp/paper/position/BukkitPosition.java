@@ -36,7 +36,7 @@ public class BukkitPosition extends AbstractPosition<Entity, World> {
     }
 
     @Override
-    public CompletableFuture<Boolean> teleport(Entity entity) {
+    public CompletableFuture<Boolean> teleportAsync(Entity entity) {
         if (!this.hasLocation()) {
             return CompletableFuture.completedFuture(Boolean.FALSE);
         }
@@ -48,6 +48,21 @@ public class BukkitPosition extends AbstractPosition<Entity, World> {
         }
 
         return entity.teleportAsync(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    @Override
+    public boolean teleport(Entity entity) {
+        if (!this.hasLocation()) {
+            return false;
+        }
+
+        Location location = this.toLocation();
+
+        if (location == null) {
+            return false;
+        }
+
+        return entity.teleport(location,PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 
     @Override

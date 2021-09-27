@@ -36,5 +36,7 @@ public interface Position<E,W> {
         this.configure(x,y,z,world,0f,0f);
     }
 
-    CompletableFuture<Boolean> teleport(E entity);
+    CompletableFuture<Boolean> teleportAsync(E entity);
+
+    boolean teleport(E entity);
 }

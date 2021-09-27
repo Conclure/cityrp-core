@@ -54,7 +54,7 @@ public class PositionRegistryGuiListener implements Listener {
         if (!position.hasLocation()) {
             return;
         }
-        position.teleport(whoClicked)
+        position.teleportAsync(whoClicked)
                 .orTimeout(10, TimeUnit.SECONDS)
                 .whenComplete((result, exception) -> {
                     if (exception != null) {
