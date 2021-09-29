@@ -5,8 +5,8 @@ import me.conclure.cityrp.common.model.user.User;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface CharacterDataManager<SS> {
-    CompletableFuture<Void> load(Character<SS> character);
+public interface CharacterDataManager<PlatformPlayer> {
+    CompletableFuture<Void> load(Character<PlatformPlayer> character);
 
-    CompletableFuture<Void> save(Character<SS> character);
+    CompletableFuture<Void> save(Character<PlatformPlayer> character);
 }

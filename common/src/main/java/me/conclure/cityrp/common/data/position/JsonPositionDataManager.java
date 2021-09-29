@@ -23,17 +23,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
-    private final PositionRegistry<E,W> positionRegistry;
-    private final WorldObtainer<W> worldObtainer;
+public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
+        implements PositionDataManager<PlatformEntity, PlatformWorld> {
+    private final PositionRegistry<PlatformEntity, PlatformWorld> positionRegistry;
+    private final WorldObtainer<PlatformWorld> worldObtainer;
     private final Path destinationDirectory;
     private final ConfigurateLoaderFactory loader;
-    private final LoadingCache<Position<E,W>, ReentrantLock> ioLocks;
+    private final LoadingCache<Position<PlatformEntity, PlatformWorld>, ReentrantLock> ioLocks;
     private final TaskCoordinator<? extends Executor> taskCoordinator;
 
     public JsonPositionDataManager(
-            PositionRegistry<E, W> positionRegistry,
-            WorldObtainer<W> worldObtainer,
+            PositionRegistry<PlatformEntity, PlatformWorld> positionRegistry,
+            WorldObtainer<PlatformWorld> worldObtainer,
             Path destinationDirectory,
             TaskCoordinator<? extends Executor> taskCoordinator
     ) {
@@ -50,7 +51,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
                 .build(key -> new ReentrantLock(true));
     }
 
-    private CompletableFuture<Void> applyAllPositionsToFuture(Function<Position<E,W>, CompletableFuture<?>> function) {
+    private CompletableFuture<Void> applyAllPositionsToFuture(Function<Position<PlatformEntity, PlatformWorld>, CompletableFuture<?>> function) {
         CompletableFuture<?>[] futures = this.positionRegistry.stream()
                 .map(function)
                 .toArray(CompletableFuture[]::new);
@@ -68,7 +69,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
     }
 
     @Override
-    public CompletableFuture<Boolean> load(Position<E,W> position) {
+    public CompletableFuture<Boolean> load(Position<PlatformEntity, PlatformWorld> position) {
         return this.taskCoordinator.supply(() -> {
             try {
                 Lock lock = this.ioLocks.get(position);
@@ -92,7 +93,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
                         return Boolean.FALSE;
                     }
 
-                    W world = this.worldObtainer.getByName(worldName);
+                    PlatformWorld world = this.worldObtainer.getByName(worldName);
 
                     if (world == null) {
                         return Boolean.FALSE;
@@ -116,7 +117,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
     }
 
     @Override
-    public CompletableFuture<Boolean> save(Position<E,W> position) {
+    public CompletableFuture<Boolean> save(Position<PlatformEntity, PlatformWorld> position) {
         return this.taskCoordinator.supply(() -> {
             try {
                 Path path = this.destinationDirectory.resolve(position.getKey() + ".json");
@@ -131,7 +132,7 @@ public class JsonPositionDataManager<E,W> implements PositionDataManager<E,W> {
                     }
 
                     ConfigurationNode node = BasicConfigurationNode.root();
-                    W world = position.getWorld();
+                    PlatformWorld world = position.getWorld();
 
                     if (world == null) {
                         return Boolean.FALSE;
