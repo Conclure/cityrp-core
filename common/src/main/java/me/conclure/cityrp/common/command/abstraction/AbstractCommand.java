@@ -1,7 +1,6 @@
 package me.conclure.cityrp.common.command.abstraction;
 
 import com.google.common.base.Preconditions;
-import com.google.common.reflect.TypeToken;
 import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.command.CommandException;
 import me.conclure.cityrp.common.command.CommandInfo;
@@ -9,10 +8,11 @@ import me.conclure.cityrp.common.sender.Sender;
 import me.conclure.cityrp.common.utility.function.ThrowingConsumer;
 import net.kyori.adventure.text.Component;
 
-public abstract class AbstractCommand<S extends Sender<SS>,SS> implements Command<S,SS> {
-    private final CommandInfo<S,SS> commandInfo;
+public abstract class AbstractCommand<S extends Sender<PlatformSender>, PlatformSender>
+        implements Command<S, PlatformSender> {
+    private final CommandInfo<S, PlatformSender> commandInfo;
 
-    protected AbstractCommand(CommandInfo<S,SS> commandInfo) {
+    protected AbstractCommand(CommandInfo<S, PlatformSender> commandInfo) {
         Preconditions.checkNotNull(commandInfo);
 
         this.commandInfo = commandInfo;
@@ -52,21 +52,21 @@ public abstract class AbstractCommand<S extends Sender<SS>,SS> implements Comman
     }
 
     @Override
-    public boolean acceptsSender(Sender<? extends SS> sender) {
+    public boolean acceptsSender(Sender<? extends PlatformSender> sender) {
         Preconditions.checkNotNull(sender);
 
         return this.commandInfo.getSenderType().isSupertypeOf(sender.getClass());
     }
 
     @Override
-    public boolean acceptsSenderType(Class<? extends Sender<? extends SS>> type) {
+    public boolean acceptsSenderType(Class<? extends Sender<? extends PlatformSender>> type) {
         Preconditions.checkNotNull(type);
 
         return this.commandInfo.getSenderType().isSupertypeOf(type);
     }
 
     @Override
-    public boolean hasPermission(Sender<? extends SS> sender) {
+    public boolean hasPermission(Sender<? extends PlatformSender> sender) {
         Preconditions.checkNotNull(sender);
 
         boolean notRequiresPermission = !this.commandInfo.requiresPermission();
@@ -80,7 +80,7 @@ public abstract class AbstractCommand<S extends Sender<SS>,SS> implements Comman
 
 
     @Override
-    public CommandInfo<S,SS> getInfo() {
+    public CommandInfo<S, PlatformSender> getInfo() {
         return this.commandInfo;
     }
 

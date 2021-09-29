@@ -1,7 +1,7 @@
 package me.conclure.cityrp.paper.position;
 
-import me.conclure.cityrp.common.position.AbstractPositionRegistry;
-import me.conclure.cityrp.common.position.Position;
+import me.conclure.cityrp.common.model.position.AbstractPositionRegistry;
+import me.conclure.cityrp.common.model.position.Position;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 

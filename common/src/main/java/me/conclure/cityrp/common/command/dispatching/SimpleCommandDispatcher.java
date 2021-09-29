@@ -6,7 +6,7 @@ import me.conclure.cityrp.common.command.CommandException;
 import me.conclure.cityrp.common.sender.Sender;
 import me.conclure.cityrp.common.utility.logging.Logger;
 
-public class SimpleCommandDispatcher<SS> implements CommandDispatcher<SS> {
+public class SimpleCommandDispatcher<PlatformSender> implements CommandDispatcher<PlatformSender> {
     private final Logger logger;
 
     public SimpleCommandDispatcher(Logger logger) {
@@ -15,7 +15,10 @@ public class SimpleCommandDispatcher<SS> implements CommandDispatcher<SS> {
     }
 
     @Override
-    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<? extends SS> sender, String[] args) {
+    public void dispatch(
+            Command<? extends Sender<PlatformSender>, PlatformSender> command,
+            Sender<? extends PlatformSender> sender,
+            String[] args) {
         Preconditions.checkNotNull(command);
         Preconditions.checkNotNull(sender);
         Preconditions.checkNotNull(args);

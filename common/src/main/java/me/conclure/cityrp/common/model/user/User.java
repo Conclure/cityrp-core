@@ -1,12 +1,13 @@
-package me.conclure.cityrp.common.data;
+package me.conclure.cityrp.common.model.user;
 
+import me.conclure.cityrp.common.model.character.Character;
+import me.conclure.cityrp.common.sender.PlayerSender;
 import net.kyori.adventure.text.Component;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-public interface User {
+public interface User<PlatformPlayer> extends PlayerSender<PlatformPlayer> {
     String getName();
 
     default Component getNameComponent() {
@@ -15,7 +16,7 @@ public interface User {
 
     UUID getUniqueId();
 
-    List<Character> getCharacters();
+    List<Character<PlatformPlayer>> getCharacters();
 
     int getCharacterAmount();
 

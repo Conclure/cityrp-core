@@ -1,9 +1,10 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.model.position;
 
 import me.conclure.cityrp.common.sender.Sender;
 import me.conclure.cityrp.common.utility.Key;
 
-public abstract class AbstractPosition<E,W> implements Position<E,W> {
+public abstract class AbstractPosition<PlatformEntity, PlatformWorld>
+        implements Position<PlatformEntity, PlatformWorld> {
     private volatile LocationInfo locationInfo;
     private final Key key;
     private final PositionInfo info;
@@ -29,7 +30,7 @@ public abstract class AbstractPosition<E,W> implements Position<E,W> {
         return sender.hasPermission(permission);
     }
 
-    protected abstract String parseWorldName(W world);
+    protected abstract String parseWorldName(PlatformWorld world);
 
     @Override
     public Key getKey() {
@@ -72,7 +73,7 @@ public abstract class AbstractPosition<E,W> implements Position<E,W> {
     }
 
     @Override
-    public void configure(double x, double y, double z, W world, float yaw, float pitch) {
+    public void configure(double x, double y, double z, PlatformWorld world, float yaw, float pitch) {
         this.locationInfo = new LocationInfo(x,y,z,this.parseWorldName(world),yaw,pitch);
     }
 

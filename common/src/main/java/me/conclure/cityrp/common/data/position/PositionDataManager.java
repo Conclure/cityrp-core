@@ -1,4 +1,6 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.data.position;
+
+import me.conclure.cityrp.common.model.position.Position;
 
 import java.util.concurrent.CompletableFuture;
 

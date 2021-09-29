@@ -1,4 +1,4 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.model.position;
 
 import me.conclure.cityrp.common.utility.Key;
 

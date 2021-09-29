@@ -7,13 +7,13 @@ import net.kyori.adventure.text.Component;
 
 import javax.swing.text.Position;
 
-public class SetpositionCommand<SS> extends UniAbstractCommand<PlayerSender<SS>,SS, Position> {
-    public SetpositionCommand(CommandInfo<PlayerSender<SS>,SS> commandInfo) {
+public class SetpositionCommand<PlatformSender> extends UniAbstractCommand<PlayerSender<PlatformSender>, PlatformSender, Position> {
+    public SetpositionCommand(CommandInfo<PlayerSender<PlatformSender>, PlatformSender> commandInfo) {
         super(commandInfo, null);
     }
 
     @Override
-    protected void execute(PlayerSender<SS> sender, Position argument) throws Exception {
+    protected void execute(PlayerSender<PlatformSender> sender, Position argument) throws Exception {
         sender.sendMessage(Component.text("hi"));
     }
 }

@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class UniAbstractCommand<S extends Sender<SS>,SS, A0> extends AbstractCommand<S,SS> {
+public abstract class UniAbstractCommand<S extends Sender<PlayformSender>, PlayformSender, A0>
+        extends AbstractCommand<S, PlayformSender> {
     private static final int ARGUMENT_LENGTH = 1;
-    private final List<Argument<?, S,SS>> argumentList;
-    private final Argument<A0, S,SS> argument0;
+    private final List<Argument<?, S, PlayformSender>> argumentList;
+    private final Argument<A0, S, PlayformSender> argument0;
 
-    protected UniAbstractCommand(CommandInfo<S,SS> commandInfo, Argument<A0, S, SS> argument0) {
+    protected UniAbstractCommand(CommandInfo<S, PlayformSender> commandInfo, Argument<A0, S, PlayformSender> argument0) {
         super(commandInfo);
         Preconditions.checkNotNull(argument0);
         this.argumentList = new ArrayList<>(ARGUMENT_LENGTH);
@@ -24,12 +25,12 @@ public abstract class UniAbstractCommand<S extends Sender<SS>,SS, A0> extends Ab
     }
 
     @Override
-    public void run(Sender<? extends SS> sender, String[] arguments) {
+    public void run(Sender<? extends PlayformSender> sender, String[] arguments) {
         if (arguments.length < ARGUMENT_LENGTH) {
             String name = this.getInfo().getName();
             sender.sendMessage(Component.text(name));
             sender.sendMessage(Component.text("Arguments:"));
-            for (Argument<?, S, SS> argument : this.argumentList) {
+            for (Argument<?, S, PlayformSender> argument : this.argumentList) {
                 sender.sendMessage(Component.text()
                         .append(argument.getNameFormatted())
                         .append(Component.text(" - "))
@@ -40,7 +41,7 @@ public abstract class UniAbstractCommand<S extends Sender<SS>,SS, A0> extends Ab
         }
 
         AbstractCommand.run0(this, sender, arguments, castedSender -> {
-            ArgumentParseResult<A0, S, SS> argument0ParseResult = this.argument0.parse(arguments[0]);
+            ArgumentParseResult<A0, S, PlayformSender> argument0ParseResult = this.argument0.parse(arguments[0]);
             Preconditions.checkNotNull(argument0ParseResult);
 
             if (argument0ParseResult.isFail()) {

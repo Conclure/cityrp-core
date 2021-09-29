@@ -1,19 +1,19 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.model.position;
 
 import com.google.common.collect.ImmutableMap;
 import me.conclure.cityrp.common.utility.Key;
 
-import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-public abstract class AbstractPositionRegistry<E,W> implements PositionRegistry<E,W> {
-    private final ImmutableMap<Key,Position<E,W>> map;
+public abstract class AbstractPositionRegistry<PlatformEntity, PlatformWorld>
+        implements PositionRegistry<PlatformEntity, PlatformWorld> {
+    private final ImmutableMap<Key,Position<PlatformEntity, PlatformWorld>> map;
     private final ImmutableMap<Integer,Key> id2KeyMap;
     private final ImmutableMap<Key,Integer> key2IdMap;
 
-    protected AbstractPositionRegistry(Stream<Position<E,W>> positions) {
-        ImmutableMap.Builder<Key,Position<E,W>> mapBuilder = ImmutableMap.builder();
+    protected AbstractPositionRegistry(Stream<Position<PlatformEntity, PlatformWorld>> positions) {
+        ImmutableMap.Builder<Key,Position<PlatformEntity, PlatformWorld>> mapBuilder = ImmutableMap.builder();
 
         positions.forEach(position -> mapBuilder.put(position.getKey(),position));
 
@@ -34,12 +34,12 @@ public abstract class AbstractPositionRegistry<E,W> implements PositionRegistry<
     }
 
     @Override
-    public Position<E, W> getByKey(Key key) {
+    public Position<PlatformEntity, PlatformWorld> getByKey(Key key) {
         return this.map.get(key);
     }
 
     @Override
-    public Stream<Position<E, W>> stream() {
+    public Stream<Position<PlatformEntity, PlatformWorld>> stream() {
         return this.map.values().stream();
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractPositionRegistry<E,W> implements PositionRegistry<
     }
 
     @Override
-    public Position<E, W> getById(int id) {
+    public Position<PlatformEntity, PlatformWorld> getById(int id) {
         Key key = this.id2KeyMap.get(id);
         if (key == null) {
             return null;

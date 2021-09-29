@@ -1,4 +1,4 @@
-package me.conclure.cityrp.common.data.paths;
+package me.conclure.cityrp.common.utility.paths;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

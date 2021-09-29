@@ -6,7 +6,7 @@ import org.jspecify.nullness.Nullable;
 
 import java.util.function.Consumer;
 
-public final class ArgumentParseResult<T, S extends Sender<SS>,SS> {
+public final class ArgumentParseResult<T, S extends Sender<PlatformSender>, PlatformSender> {
     @Nullable
     private final T parsedObject;
     private final boolean isFail;

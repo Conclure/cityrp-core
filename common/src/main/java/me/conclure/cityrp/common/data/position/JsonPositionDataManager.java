@@ -1,7 +1,9 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.data.position;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.base.Preconditions;
+import me.conclure.cityrp.common.model.position.Position;
+import me.conclure.cityrp.common.model.position.PositionRegistry;
 import me.conclure.cityrp.common.utility.WorldObtainer;
 import me.conclure.cityrp.common.utility.CaffeineFactory;
 import me.conclure.cityrp.common.utility.ConfigurateLoaderFactory;

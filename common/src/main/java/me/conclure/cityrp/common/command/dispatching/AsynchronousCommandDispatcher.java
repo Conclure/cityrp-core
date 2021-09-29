@@ -7,12 +7,12 @@ import me.conclure.cityrp.common.utility.concurrent.TaskCoordinator;
 
 import java.util.concurrent.Executor;
 
-public class AsynchronousCommandDispatcher<SS> implements CommandDispatcher<SS> {
-    private final CommandDispatcher<SS> delegatingDispatcher;
+public class AsynchronousCommandDispatcher<PlatformPlayer> implements CommandDispatcher<PlatformPlayer> {
+    private final CommandDispatcher<PlatformPlayer> delegatingDispatcher;
     private final TaskCoordinator<? extends Executor> taskCoordinator;
 
     public AsynchronousCommandDispatcher(
-            CommandDispatcher<SS> delegatingDispatcher,
+            CommandDispatcher<PlatformPlayer> delegatingDispatcher,
             TaskCoordinator<? extends Executor> taskCoordinator
     ) {
         Preconditions.checkNotNull(taskCoordinator);
@@ -22,11 +22,15 @@ public class AsynchronousCommandDispatcher<SS> implements CommandDispatcher<SS> 
         this.delegatingDispatcher = delegatingDispatcher;
     }
 
-    public CommandDispatcher<SS> getDelegatingDispatcher() {
+    public CommandDispatcher<PlatformPlayer> getDelegatingDispatcher() {
         return this.delegatingDispatcher;
     }
 
-    public void dispatch(Command<? extends Sender<SS>,SS> command, Sender<? extends SS> sender, String[] args) {
+    public void dispatch(
+            Command<? extends Sender<PlatformPlayer>, PlatformPlayer> command,
+            Sender<? extends PlatformPlayer> sender,
+            String[] args
+    ) {
         Preconditions.checkNotNull(command);
         Preconditions.checkNotNull(sender);
         Preconditions.checkNotNull(args);

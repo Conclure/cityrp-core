@@ -1,6 +1,6 @@
 package me.conclure.cityrp.paper.listener;
 
-import me.conclure.cityrp.common.position.Position;
+import me.conclure.cityrp.common.model.position.Position;
 import me.conclure.cityrp.paper.gui.PositionRegistryGuiManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.World;

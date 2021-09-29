@@ -1,6 +1,5 @@
-package me.conclure.cityrp.common.position;
+package me.conclure.cityrp.common.model.position;
 
-import me.conclure.cityrp.common.utility.Key;
 import org.jspecify.nullness.Nullable;
 
 public class PositionInfo {

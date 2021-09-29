@@ -55,12 +55,4 @@ public class BukkitSenderManager implements SenderManager<CommandSender> {
     public void openBook(BookSender<? extends CommandSender> sender, Book.Builder bookBuilder) {
         this.bukkitAudiences.sender(sender.delegate()).openBook(bookBuilder);
     }
-
-    @Override
-    public Sender<? extends CommandSender> asSender(CommandSender sender) {
-        if (sender instanceof Player player) {
-            return new BukkitPlayerSender<>(player, this);
-        }
-        return new BukkitSender<>(sender);
-    }
 }

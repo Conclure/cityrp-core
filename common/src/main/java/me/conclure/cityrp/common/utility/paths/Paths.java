@@ -1,4 +1,4 @@
-package me.conclure.cityrp.common.data.paths;
+package me.conclure.cityrp.common.utility.paths;
 
 import me.conclure.cityrp.common.utility.Key;
 

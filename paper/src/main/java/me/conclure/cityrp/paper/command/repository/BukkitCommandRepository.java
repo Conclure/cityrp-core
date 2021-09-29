@@ -5,9 +5,10 @@ import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.command.CommandInfo;
 import me.conclure.cityrp.common.command.repository.CommandRepository;
 import me.conclure.cityrp.common.sender.Sender;
-import me.conclure.cityrp.common.sender.SenderManager;
+import me.conclure.cityrp.common.sender.SenderTranformer;
 import me.conclure.cityrp.common.utility.logging.Logger;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jspecify.nullness.Nullable;
@@ -23,16 +24,16 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
     private final ImmutableMap<String, Command<? extends Sender<CommandSender>, CommandSender>> aliasMap;
     private final Logger logger;
     private final Supplier<CommandInjector> commandInjector;
-    private final SenderManager<CommandSender> senderManager;
+    private final SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer;
 
     public BukkitCommandRepository(
             Logger logger,
             PluginManager pluginManager,
             Plugin plugin,
-            SenderManager<CommandSender> senderManager,
-            Stream<Command<? extends Sender<CommandSender>, CommandSender>> commands) {
+            Stream<Command<? extends Sender<CommandSender>, CommandSender>> commands,
+            SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer) {
         this.logger = logger;
-        this.senderManager = senderManager;
+        this.senderTranformer = senderTranformer;
         ImmutableMap.Builder<String, Command<? extends Sender<CommandSender>, CommandSender>> commandMapBuilder = ImmutableMap.builder();
         Map<String, Command<? extends Sender<CommandSender>, CommandSender>> tempAliasMap = new HashMap<>();
         commands.forEach(command -> {
@@ -53,7 +54,7 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
         });
         this.commandMap = commandMapBuilder.build();
         this.aliasMap = ImmutableMap.copyOf(tempAliasMap);
-        this.commandInjector = () -> new CommandInjector(pluginManager, plugin.getName(), this.senderManager);
+        this.commandInjector = () -> new CommandInjector(pluginManager, plugin.getName(), this.senderTranformer);
     }
 
     @Override
@@ -91,9 +92,9 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
                 Logger logger,
                 PluginManager pluginManager,
                 Plugin plugin,
-                SenderManager<CommandSender> senderManager
+                SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderConverter
         ) {
-            return new BukkitCommandRepository(logger, pluginManager, plugin, senderManager, this.commands.build());
+            return new BukkitCommandRepository(logger, pluginManager, plugin, this.commands.build(), senderConverter);
         }
     }
 }

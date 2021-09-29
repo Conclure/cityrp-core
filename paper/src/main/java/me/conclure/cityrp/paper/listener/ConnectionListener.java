@@ -1,8 +1,8 @@
 package me.conclure.cityrp.paper.listener;
 
-import me.conclure.cityrp.common.position.Position;
-import me.conclure.cityrp.common.position.PositionRegistry;
-import me.conclure.cityrp.common.position.Positions;
+import me.conclure.cityrp.common.model.position.Position;
+import me.conclure.cityrp.common.model.position.PositionRegistry;
+import me.conclure.cityrp.common.model.position.Positions;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
