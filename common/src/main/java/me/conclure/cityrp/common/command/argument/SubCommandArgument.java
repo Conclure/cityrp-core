@@ -10,9 +10,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class SubCommandArgument<C extends Command<S, PlatformSender>,S extends Sender<PlatformSender>, PlatformSender>
-        extends AbstractArgument<C,S, PlatformSender, SubCommandArgument.Info<C,S, PlatformSender>>{
-    public SubCommandArgument(SubCommandArgument.Info<C,S, PlatformSender> info, Stream<C> stream) {
+public class SubCommandArgument<C extends Command<S>,S extends Sender>
+        extends AbstractArgument<C,S, SubCommandArgument.Info<C,S>>{
+    public SubCommandArgument(SubCommandArgument.Info<C,S> info, Stream<C> stream) {
         super(info);
 
         stream.forEach(command -> {
@@ -22,7 +22,7 @@ public class SubCommandArgument<C extends Command<S, PlatformSender>,S extends S
     }
 
     @Override
-    public ArgumentParseResult<C, S, PlatformSender> parse(String argument) {
+    public ArgumentParseResult<C, S> parse(String argument) {
         Preconditions.checkNotNull(argument);
         C command = this.getInfo().map.get(argument.toLowerCase(Locale.ROOT));
 
@@ -35,7 +35,7 @@ public class SubCommandArgument<C extends Command<S, PlatformSender>,S extends S
         return ArgumentParseResult.success(command);
     }
 
-    public static class Info<C extends Command<S, PlatformSender>,S extends Sender<PlatformSender>, PlatformSender>
+    public static class Info<C extends Command<S>,S extends Sender>
             extends ArgumentInfo {
         private final Map<String,C> map;
 
@@ -45,35 +45,35 @@ public class SubCommandArgument<C extends Command<S, PlatformSender>,S extends S
         }
     }
 
-    public static class InfoBuilder<C extends Command<S, PlatformSender>,S extends Sender<PlatformSender>, PlatformSender>
+    public static class InfoBuilder<C extends Command<S>,S extends Sender>
             extends ArgumentInfo.Builder {
         private Map<String,C> map = new HashMap<>();
 
         @Override
-        public InfoBuilder<C,S, PlatformSender> description(Component description) {
+        public InfoBuilder<C,S> description(Component description) {
             super.description(description);
             return this;
         }
 
         @Override
-        public InfoBuilder<C,S, PlatformSender> name(String name) {
+        public InfoBuilder<C,S> name(String name) {
             super.name(name);
             return this;
         }
 
         @Override
-        public InfoBuilder<C,S, PlatformSender> optional(boolean optional) {
+        public InfoBuilder<C,S> optional(boolean optional) {
             super.optional(optional);
             return this;
         }
 
-        public InfoBuilder<C,S, PlatformSender> mapImplementation(Map<String, C> map) {
+        public InfoBuilder<C,S> mapImplementation(Map<String, C> map) {
             this.map = map;
             return this;
         }
 
         @Override
-        public Info<C,S, PlatformSender> build() {
+        public Info<C,S> build() {
             return new Info<>(this.isOptional(),this.name(),this.description(),this.map);
         }
     }

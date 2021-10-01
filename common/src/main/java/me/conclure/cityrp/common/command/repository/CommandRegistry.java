@@ -4,12 +4,12 @@ import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.sender.Sender;
 import org.jspecify.nullness.Nullable;
 
-public interface CommandRepository<PlatformSender> {
+public interface CommandRegistry {
     void registerContainedCommands();
 
     @Nullable
-    Command<? extends Sender<PlatformSender>, PlatformSender> getByName(String name);
+    Command<? extends Sender> getByName(String name);
 
     @Nullable
-    Command<? extends Sender<PlatformSender>, PlatformSender> getByAlias(String alias);
+    Command<? extends Sender> getByAlias(String alias);
 }

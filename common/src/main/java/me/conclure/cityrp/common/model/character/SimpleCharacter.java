@@ -7,21 +7,21 @@ import org.jspecify.nullness.Nullable;
 
 import java.util.UUID;
 
-public class SimpleCharacter<PlatformSender> extends DelegatingPlayerSender<User<PlatformSender>, PlatformSender> implements Character<PlatformSender> {
-    private final UserRepository<PlatformSender> userRepository;
+public class SimpleCharacter extends DelegatingPlayerSender implements Character {
+    private final UserRepository userRepository;
     private final UUID ownerUniqueId;
     private final UUID uniqueId;
     @Nullable
     private String name;
 
-    public SimpleCharacter(UserRepository<PlatformSender> userRepository, UUID ownerUniqueId, UUID uniqueId) {
+    public SimpleCharacter(UserRepository userRepository, UUID ownerUniqueId, UUID uniqueId) {
         this.userRepository = userRepository;
         this.ownerUniqueId = ownerUniqueId;
         this.uniqueId = uniqueId;
     }
 
     @Override
-    public User<PlatformSender> getOwner() {
+    public User getOwner() {
         return this.userRepository.getOrCreate(this.ownerUniqueId);
     }
 
@@ -41,7 +41,7 @@ public class SimpleCharacter<PlatformSender> extends DelegatingPlayerSender<User
     }
 
     @Override
-    protected User<PlatformSender> getDelegate() {
+    protected User delegate() {
         return this.getOwner();
     }
 }

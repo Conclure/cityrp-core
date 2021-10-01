@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 public interface Position<PlatformEntity, PlatformWorld> {
     PositionInfo getInfo();
 
-    boolean hasPermission(Sender<?> sender);
+    boolean hasPermission(Sender sender);
 
     Key getKey();
 

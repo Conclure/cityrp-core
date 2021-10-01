@@ -17,9 +17,9 @@ import java.util.List;
 final class CommandInjector {
     final SimpleCommandMap commandMap;
     final String fallbackPrefix;
-    final SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer;
+    final SenderTranformer<CommandSender, Sender> senderTranformer;
 
-    CommandInjector(PluginManager pluginManager, String fallbackPrefix, SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer) {
+    CommandInjector(PluginManager pluginManager, String fallbackPrefix, SenderTranformer<CommandSender, Sender> senderTranformer) {
         this.senderTranformer = senderTranformer;
         Preconditions.checkNotNull(pluginManager);
         Preconditions.checkArgument(pluginManager instanceof SimplePluginManager);
@@ -45,7 +45,7 @@ final class CommandInjector {
         }
     }
 
-    <S extends Sender<CommandSender>> void inject(Command<S, CommandSender> command) {
+    <S extends Sender> void inject(Command<S> command) {
         Preconditions.checkNotNull(command);
 
         this.commandMap.register(this.fallbackPrefix, new InjectedCommand<>(command));
@@ -57,18 +57,18 @@ final class CommandInjector {
         }
     }
 
-    class InjectedCommand<S extends Sender<CommandSender>> extends org.bukkit.command.Command {
-        final Command<S, CommandSender> command;
+    class InjectedCommand<S extends Sender> extends org.bukkit.command.Command {
+        final Command<S> command;
 
-        InjectedCommand(Command<S, CommandSender> command) {
+        InjectedCommand(Command<S> command) {
             super(command.getInfo().getName());
             this.command = command;
         }
 
         @Override
         public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-            CommandDispatcher<CommandSender> dispatcher = this.command.getInfo().getCommandDispatcher();
-            Sender<? extends CommandSender> sender = CommandInjector.this.senderTranformer.tranform(commandSender);
+            CommandDispatcher dispatcher = this.command.getInfo().getCommandDispatcher();
+            Sender sender = CommandInjector.this.senderTranformer.tranform(commandSender);
 
             dispatcher.dispatch(this.command, sender, strings);
             return true;

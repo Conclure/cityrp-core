@@ -4,21 +4,27 @@ import org.jspecify.nullness.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public class SimpleCharacterRepository<SS> implements CharacterRepository<SS> {
-    private final Map<UUID, Map<UUID,Character<SS>>> characterCache;
+public class SimpleCharacterRepository implements CharacterRepository {
+    private final Map<UUID, Map<UUID,Character>> characterCache;
+    private final Supplier<? extends Map<UUID,Character>> mapFactory;
 
-    public SimpleCharacterRepository(Map<UUID, Map<UUID, Character<SS>>> characterCache) {
+    public SimpleCharacterRepository(
+            Map<UUID, Map<UUID, Character>> characterCache,
+            Supplier<? extends Map<UUID, Character>> mapFactory
+    ) {
         this.characterCache = characterCache;
+        this.mapFactory = mapFactory;
     }
 
     @Override
-    public @Nullable Character<SS> getIfPresent(UUID userUniqueId, UUID uniqueId) {
+    public @Nullable Character getIfPresent(UUID userUniqueId, UUID uniqueId) {
         return null;
     }
 
     @Override
-    public Character<SS> getOrCreate(UUID userUniqueId, UUID uniqueId) {
+    public Character getOrCreate(UUID userUniqueId, UUID uniqueId) {
         return null;
     }
 }

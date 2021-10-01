@@ -6,7 +6,7 @@ import org.jspecify.nullness.Nullable;
 
 import java.util.function.Consumer;
 
-public final class ArgumentParseResult<T, S extends Sender<PlatformSender>, PlatformSender> {
+public final class ArgumentParseResult<T, S> {
     @Nullable
     private final T parsedObject;
     private final boolean isFail;
@@ -23,13 +23,13 @@ public final class ArgumentParseResult<T, S extends Sender<PlatformSender>, Plat
         this.failHandler = failHandler;
     }
 
-    public static <T, S extends Sender<SS>,SS> ArgumentParseResult<T, S, SS> success(T parsedObject) {
+    public static <T, S extends Sender> ArgumentParseResult<T, S> success(T parsedObject) {
         Preconditions.checkNotNull(parsedObject);
 
         return new ArgumentParseResult<>(parsedObject, false, null);
     }
 
-    public static <T, S extends Sender<SS>,SS> ArgumentParseResult<T, S, SS> fail(Consumer<? super S> failHandler) {
+    public static <T, S extends Sender> ArgumentParseResult<T, S> fail(Consumer<? super S> failHandler) {
         Preconditions.checkNotNull(failHandler);
 
         return new ArgumentParseResult<>(null, true, failHandler);

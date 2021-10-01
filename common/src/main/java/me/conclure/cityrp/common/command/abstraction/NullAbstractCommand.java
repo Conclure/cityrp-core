@@ -3,14 +3,14 @@ package me.conclure.cityrp.common.command.abstraction;
 import me.conclure.cityrp.common.command.CommandInfo;
 import me.conclure.cityrp.common.sender.Sender;
 
-public abstract class NullAbstractCommand<S extends Sender<PlatformSender>, PlatformSender>
-        extends AbstractCommand<S, PlatformSender> {
-    protected NullAbstractCommand(CommandInfo<S, PlatformSender> commandInfo) {
+public abstract class NullAbstractCommand<S extends Sender>
+        extends AbstractCommand<S> {
+    protected NullAbstractCommand(CommandInfo<S> commandInfo) {
         super(commandInfo);
     }
 
     @Override
-    public void run(Sender<? extends PlatformSender> sender, String[] arguments) {
+    public void run(Sender sender, String[] arguments) {
         AbstractCommand.run0(this, sender, arguments, this::execute);
     }
 

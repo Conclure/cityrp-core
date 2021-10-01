@@ -6,52 +6,52 @@ import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
-public abstract class DelegatingPlayerSender<S extends PlayerSender<? extends PlatformPlayer>, PlatformPlayer>
-        implements PlayerSender<PlatformPlayer> {
-    protected abstract S getDelegate();
+public abstract class DelegatingPlayerSender
+        implements PlayerSender {
+    protected abstract PlayerSender delegate();
 
     @Override
     public void sendActionBar(Component component) {
-        this.getDelegate().sendActionBar(component);
+        this.delegate().sendActionBar(component);
     }
 
     @Override
     public void openBook(Book book) {
-        this.getDelegate().openBook(book);
+        this.delegate().openBook(book);
     }
 
     @Override
     public void openBook(Book.Builder bookBuilder) {
-        this.getDelegate().openBook(bookBuilder);
+        this.delegate().openBook(bookBuilder);
     }
 
     @Override
     public void showBossBar(BossBar bossBar) {
-        this.getDelegate().showBossBar(bossBar);
+        this.delegate().showBossBar(bossBar);
     }
 
     @Override
     public void hideBossBar(BossBar bossBar) {
-        this.getDelegate().hideBossBar(bossBar);
+        this.delegate().hideBossBar(bossBar);
     }
 
     @Override
     public void sendMessage(Component component) {
-        this.getDelegate().sendMessage(component);
+        this.delegate().sendMessage(component);
     }
 
     @Override
     public boolean hasPermission(String permission) {
-        return this.getDelegate().hasPermission(permission);
+        return this.delegate().hasPermission(permission);
     }
 
     @Override
-    public void sendTitle(Title title) {
-        this.getDelegate().sendTitle(title);
+    public void showTitle(Title title) {
+        this.delegate().showTitle(title);
     }
 
     @Override
-    public PlatformPlayer delegate() {
-        return this.getDelegate().delegate();
+    public void clearTitle() {
+        this.delegate().clearTitle();
     }
 }

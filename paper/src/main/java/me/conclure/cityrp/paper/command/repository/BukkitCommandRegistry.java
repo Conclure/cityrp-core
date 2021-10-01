@@ -3,12 +3,11 @@ package me.conclure.cityrp.paper.command.repository;
 import com.google.common.collect.ImmutableMap;
 import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.command.CommandInfo;
-import me.conclure.cityrp.common.command.repository.CommandRepository;
+import me.conclure.cityrp.common.command.repository.CommandRegistry;
 import me.conclure.cityrp.common.sender.Sender;
 import me.conclure.cityrp.common.sender.SenderTranformer;
 import me.conclure.cityrp.common.utility.logging.Logger;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jspecify.nullness.Nullable;
@@ -19,30 +18,30 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class BukkitCommandRepository implements CommandRepository<CommandSender> {
-    private final ImmutableMap<String, Command<? extends Sender<CommandSender>, CommandSender>> commandMap;
-    private final ImmutableMap<String, Command<? extends Sender<CommandSender>, CommandSender>> aliasMap;
+public class BukkitCommandRegistry implements CommandRegistry {
+    private final ImmutableMap<String, Command<? extends Sender>> commandMap;
+    private final ImmutableMap<String, Command<? extends Sender>> aliasMap;
     private final Logger logger;
     private final Supplier<CommandInjector> commandInjector;
-    private final SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer;
+    private final SenderTranformer<CommandSender, Sender> senderTranformer;
 
-    public BukkitCommandRepository(
+    public BukkitCommandRegistry(
             Logger logger,
             PluginManager pluginManager,
             Plugin plugin,
-            Stream<Command<? extends Sender<CommandSender>, CommandSender>> commands,
-            SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderTranformer) {
+            Stream<Command<? extends Sender>> commands,
+            SenderTranformer<CommandSender, Sender> senderTranformer) {
         this.logger = logger;
         this.senderTranformer = senderTranformer;
-        ImmutableMap.Builder<String, Command<? extends Sender<CommandSender>, CommandSender>> commandMapBuilder = ImmutableMap.builder();
-        Map<String, Command<? extends Sender<CommandSender>, CommandSender>> tempAliasMap = new HashMap<>();
+        ImmutableMap.Builder<String, Command<? extends Sender>> commandMapBuilder = ImmutableMap.builder();
+        Map<String, Command<? extends Sender>> tempAliasMap = new HashMap<>();
         commands.forEach(command -> {
-            CommandInfo<? extends Sender<CommandSender>, CommandSender> info = command.getInfo();
+            CommandInfo<? extends Sender> info = command.getInfo();
             String name = info.getName();
             commandMapBuilder.put(name, command);
 
             for (String alias : info.getAliases()) {
-                Command<?, CommandSender> previousCommand = tempAliasMap.get(alias);
+                Command<?> previousCommand = tempAliasMap.get(alias);
 
                 if (previousCommand != null) {
                     String previousCommandName = previousCommand.getInfo().getName();
@@ -60,41 +59,41 @@ public class BukkitCommandRepository implements CommandRepository<CommandSender>
     @Override
     public void registerContainedCommands() {
         CommandInjector commandInjector = this.commandInjector.get();
-        for (Command<? extends Sender<CommandSender>, CommandSender> command : this.commandMap.values()) {
+        for (Command<? extends Sender> command : this.commandMap.values()) {
             commandInjector.inject(command);
         }
     }
 
     @Nullable
     @Override
-    public Command<? extends Sender<CommandSender>, CommandSender> getByName(String name) {
+    public Command<? extends Sender> getByName(String name) {
         return this.commandMap.get(name.toLowerCase(Locale.ROOT));
     }
 
     @Nullable
     @Override
-    public Command<? extends Sender<CommandSender>, CommandSender> getByAlias(String alias) {
+    public Command<? extends Sender> getByAlias(String alias) {
         return this.aliasMap.get(alias.toLowerCase(Locale.ROOT));
     }
 
     public static class Builder {
-        private final Stream.Builder<Command<? extends Sender<CommandSender>, CommandSender>> commands = Stream.builder();
+        private final Stream.Builder<Command<? extends Sender>> commands = Stream.builder();
 
         public Builder() {
         }
 
-        public Builder add(Command<? extends Sender<CommandSender>, CommandSender> command) {
+        public Builder add(Command<? extends Sender> command) {
             this.commands.add(command);
             return this;
         }
 
-        public BukkitCommandRepository build(
+        public BukkitCommandRegistry build(
                 Logger logger,
                 PluginManager pluginManager,
                 Plugin plugin,
-                SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderConverter
+                SenderTranformer<CommandSender, Sender> senderConverter
         ) {
-            return new BukkitCommandRepository(logger, pluginManager, plugin, this.commands.build(), senderConverter);
+            return new BukkitCommandRegistry(logger, pluginManager, plugin, this.commands.build(), senderConverter);
         }
     }
 }

@@ -20,7 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
@@ -29,7 +31,7 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
     private final WorldObtainer<PlatformWorld> worldObtainer;
     private final Path destinationDirectory;
     private final ConfigurateLoaderFactory loader;
-    private final LoadingCache<Position<PlatformEntity, PlatformWorld>, ReentrantLock> ioLocks;
+    private final LoadingCache<Position<PlatformEntity, PlatformWorld>, ReadWriteLock> ioLocks;
     private final TaskCoordinator<? extends Executor> taskCoordinator;
 
     public JsonPositionDataManager(
@@ -48,7 +50,7 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
                 .build();
         this.ioLocks = CaffeineFactory.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
-                .build(key -> new ReentrantLock(true));
+                .build(key -> new ReentrantReadWriteLock(true));
     }
 
     private CompletableFuture<Void> applyAllPositionsToFuture(Function<Position<PlatformEntity, PlatformWorld>, CompletableFuture<?>> function) {
@@ -72,11 +74,11 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
     public CompletableFuture<Boolean> load(Position<PlatformEntity, PlatformWorld> position) {
         return this.taskCoordinator.supply(() -> {
             try {
-                Lock lock = this.ioLocks.get(position);
+                ReadWriteLock lock = this.ioLocks.get(position);
                 Preconditions.checkNotNull(lock);
                 ConfigurationNode node = null;
 
-                lock.lock();
+                lock.readLock().lock();
                 try {
                     Path path = this.destinationDirectory.resolve(position.getKey() + ".json");
                     if (Files.exists(path)) {
@@ -107,7 +109,7 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
 
                     position.configure(x,y,z,world,yaw,pitch);
                 } finally {
-                    lock.unlock();
+                    lock.readLock().unlock();
                 }
             } catch (Exception e) {
                 throw new RuntimeFileIOException(e);
@@ -121,10 +123,10 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
         return this.taskCoordinator.supply(() -> {
             try {
                 Path path = this.destinationDirectory.resolve(position.getKey() + ".json");
-                Lock lock = this.ioLocks.get(position);
+                ReadWriteLock lock = this.ioLocks.get(position);
                 Preconditions.checkNotNull(lock);
 
-                lock.lock();
+                lock.writeLock().lock();
                 try {
                     if (!position.hasLocation()) {
                         Files.deleteIfExists(path);
@@ -147,7 +149,7 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
 
                     this.loader.loader(path).save(node);
                 } finally {
-                    lock.unlock();
+                    lock.writeLock().unlock();
                 }
             } catch (Exception e) {
                 throw new RuntimeFileIOException(e);

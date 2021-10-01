@@ -1,5 +1,6 @@
 package me.conclure.cityrp.paper.listener;
 
+import me.conclure.cityrp.common.languange.Locale;
 import me.conclure.cityrp.common.model.position.Position;
 import me.conclure.cityrp.common.model.position.PositionRegistry;
 import me.conclure.cityrp.common.model.position.Positions;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -58,7 +60,11 @@ public class ConnectionListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Position<Entity, World> spawn = this.positionRegistry.getByKey(Positions.SPAWN);
-        spawn.teleportAsync(player);
+        boolean failedTeleport = !spawn.teleport(player);
+        if (failedTeleport) {
+            player.kick(Locale.FAILED_INITIAL_TELEPORTING.build(), PlayerKickEvent.Cause.PLUGIN);
+            this.playersMenuModeSet.remove(player.getUniqueId());
+        }
     }
 
     @EventHandler

@@ -10,22 +10,24 @@ public interface Locale {
     Component NEW_LINE = Component.newline();
     Component SPACE = Component.space();
 
-    UniComponent<Sender<?>, String> REQUIRED_ARGUMENT = argument -> text()
+    UniComponent<Sender, String> REQUIRED_ARGUMENT = argument -> text()
             .color(DARK_GRAY)
             .append(text("<"))
             .append(text(argument, GRAY))
             .append(text(">"))
             .build();
 
-    UniComponent<Sender<?>, String> OPTIONAL_ARGUMENT = argument -> text()
+    UniComponent<Sender, String> OPTIONAL_ARGUMENT = argument -> text()
             .color(DARK_GRAY)
             .append(text("["))
             .append(text(argument, GRAY))
             .append(text("]"))
             .build();
 
+    NullComponent<Sender> FAILED_INITIAL_TELEPORTING = () -> text("Failed teleporting you.");
+
     @FunctionalInterface
-    interface NullComponent<S extends Sender<?>> {
+    interface NullComponent<S extends Sender> {
         Component build();
 
         default void send(S sender) {
@@ -34,7 +36,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface UniComponent<S extends Sender<?>, A0> {
+    interface UniComponent<S extends Sender, A0> {
         Component build(A0 arg0);
 
         default void send(S sender, A0 arg0) {
@@ -43,7 +45,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface BiComponent<S extends Sender<?>, A0, A1> {
+    interface BiComponent<S extends Sender, A0, A1> {
         Component build(A0 arg0, A1 arg1);
 
         default void send(S sender, A0 arg0, A1 arg1) {
@@ -52,7 +54,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface TriComponent<S extends Sender<?>, A0, A1, A2> {
+    interface TriComponent<S extends Sender, A0, A1, A2> {
         Component build(A0 arg0, A1 arg1, A2 arg2);
 
         default void send(S sender, A0 arg0, A1 arg1, A2 arg2) {
@@ -61,7 +63,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface QuadComponent<S extends Sender<?>, A0, A1, A2, A3> {
+    interface QuadComponent<S extends Sender, A0, A1, A2, A3> {
         Component build(A0 arg0, A1 arg1, A2 arg2, A3 arg3);
 
         default void send(S sender, A0 arg0, A1 arg1, A2 arg2, A3 arg3) {
@@ -70,7 +72,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface PentaComponent<S extends Sender<?>, A0, A1, A2, A3, A4> {
+    interface PentaComponent<S extends Sender, A0, A1, A2, A3, A4> {
         Component build(A0 arg0, A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 
         default void send(S sender, A0 arg0, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
@@ -79,7 +81,7 @@ public interface Locale {
     }
 
     @FunctionalInterface
-    interface HexaComponent<S extends Sender<?>, A0, A1, A2, A3, A4, A5> {
+    interface HexaComponent<S extends Sender, A0, A1, A2, A3, A4, A5> {
         Component build(A0 arg0, A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5);
 
         default void send(S sender, A0 arg0, A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5) {

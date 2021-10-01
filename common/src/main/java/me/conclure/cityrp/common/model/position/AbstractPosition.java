@@ -20,7 +20,7 @@ public abstract class AbstractPosition<PlatformEntity, PlatformWorld>
     }
 
     @Override
-    public boolean hasPermission(Sender<?> sender) {
+    public boolean hasPermission(Sender sender) {
         String permission = this.info.getPermission();
 
         if (permission == null) {

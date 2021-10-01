@@ -1,13 +1,13 @@
 package me.conclure.cityrp.paper.sender;
 
 import me.conclure.cityrp.common.sender.Sender;
-import me.conclure.cityrp.common.sender.SenderManager;
 import me.conclure.cityrp.common.sender.SenderTranformer;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BukkitSender<BukkitPlatformSender extends CommandSender> implements Sender<BukkitPlatformSender> {
+public class BukkitSender<BukkitPlatformSender extends CommandSender> implements Sender {
     private final BukkitPlatformSender sender;
 
     BukkitSender(BukkitPlatformSender sender) {
@@ -20,27 +20,21 @@ public class BukkitSender<BukkitPlatformSender extends CommandSender> implements
     }
 
     @Override
-    public BukkitPlatformSender delegate() {
-        return this.sender;
-    }
-
-    @Override
     public boolean hasPermission(String permission) {
         return this.sender.hasPermission(permission);
     }
 
-    public static class Transformer
-            implements SenderTranformer<CommandSender,Sender<? extends CommandSender>> {
-        private final SenderManager<CommandSender> senderManager;
+    public static class Transformer implements SenderTranformer<CommandSender,Sender> {
+        private final BukkitAudiences audiences;
 
-        public Transformer(SenderManager<CommandSender> senderManager) {
-            this.senderManager = senderManager;
+        public Transformer(BukkitAudiences audiences) {
+            this.audiences = audiences;
         }
 
         @Override
-        public Sender<? extends CommandSender> tranform(CommandSender bukkitPlatformSender) {
+        public Sender tranform(CommandSender bukkitPlatformSender) {
             if (bukkitPlatformSender instanceof Player player) {
-                return new BukkitPlayerSender<>(player, this.senderManager);
+                return new BukkitPlayerSender(player, this.audiences);
             }
             return new BukkitSender<>(bukkitPlatformSender);
         }

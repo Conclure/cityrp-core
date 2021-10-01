@@ -4,8 +4,8 @@ import me.conclure.cityrp.common.languange.Locale;
 import me.conclure.cityrp.common.sender.Sender;
 import net.kyori.adventure.text.Component;
 
-public abstract class AbstractArgument<T, S extends Sender<PlatformSender>, PlatformSender,A extends ArgumentInfo>
-        implements Argument<T, S, PlatformSender> {
+public abstract class AbstractArgument<T, S extends Sender,A extends ArgumentInfo>
+        implements Argument<T, S> {
     private final A info;
 
     protected AbstractArgument(A info) {

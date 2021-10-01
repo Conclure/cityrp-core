@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public interface TypeTokens {
-    TypeToken<PlayerSender<CommandSender>> PLAYERSENDER_COMMANDSENDER = new TypeToken<>() {};
-    TypeToken<PlayerSender<? extends Player>> PLAYERSENDER_PLAYER = new TypeToken<>() {};
-    TypeToken<Sender<? extends CommandSender>> SENDER_PLAYER = new TypeToken<>() {};
+    TypeToken<PlayerSender> PLAYERSENDER = new TypeToken<>() {};
+    TypeToken<Sender> SENDER = new TypeToken<>() {};
 }

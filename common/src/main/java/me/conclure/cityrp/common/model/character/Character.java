@@ -6,8 +6,8 @@ import net.kyori.adventure.text.Component;
 
 import java.util.UUID;
 
-public interface Character<SS> extends PlayerSender<SS> {
-    User<SS> getOwner();
+public interface Character extends PlayerSender {
+    User getOwner();
 
     UUID getUniqueId();
 

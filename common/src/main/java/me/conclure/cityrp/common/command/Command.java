@@ -2,15 +2,15 @@ package me.conclure.cityrp.common.command;
 
 import me.conclure.cityrp.common.sender.Sender;
 
-public interface Command<S extends Sender<SS>,SS> {
-    boolean acceptsSender(Sender<? extends SS> sender);
+public interface Command<S extends Sender> {
+    boolean acceptsSender(Sender sender);
 
-    boolean acceptsSenderType(Class<? extends Sender<? extends SS>> type);
+    boolean acceptsSenderType(Class<? extends Sender> type);
 
-    boolean hasPermission(Sender<? extends SS> sender);
+    boolean hasPermission(Sender sender);
 
-    CommandInfo<S,SS> getInfo();
+    CommandInfo<S> getInfo();
 
-    void run(Sender<? extends SS> sender, String[] arguments);
+    void run(Sender sender, String[] arguments);
 
 }

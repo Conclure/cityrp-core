@@ -11,13 +11,13 @@ import org.jspecify.nullness.Nullable;
 import java.util.Locale;
 import java.util.concurrent.locks.Lock;
 
-public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender> {
+public final class CommandInfo<S extends Sender> {
     @Nullable
     private final String permission;
     private final String name;
     private final TypeToken<S> senderType;
     private final ImmutableList<String> aliases;
-    private final CommandDispatcher<PlatformSender> commandDispatcher;
+    private final CommandDispatcher commandDispatcher;
     private final Lock lock;
 
     private CommandInfo(
@@ -25,7 +25,7 @@ public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender>
             String name,
             TypeToken<S> senderType,
             ImmutableSet<String> aliases,
-            CommandDispatcher<PlatformSender> commandDispatcher,
+            CommandDispatcher commandDispatcher,
             Lock lock
     ) {
         Preconditions.checkNotNull(permission);
@@ -42,7 +42,7 @@ public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender>
         this.lock = lock;
     }
 
-    public static <S extends Sender<SS>,SS> Builder<S,SS> newBuilder(TypeToken<S> senderType) {
+    public static <S extends Sender> Builder<S> newBuilder(TypeToken<S> senderType) {
         return new Builder<>(senderType);
     }
 
@@ -64,7 +64,7 @@ public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender>
         return this.aliases;
     }
 
-    public CommandDispatcher<PlatformSender> getCommandDispatcher() {
+    public CommandDispatcher getCommandDispatcher() {
         return this.commandDispatcher;
     }
 
@@ -81,32 +81,32 @@ public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender>
         return this.lock != null;
     }
 
-    public static final class Builder<S extends Sender<PlatformSender>, PlatformSender> {
+    public static final class Builder<S extends Sender> {
         private final TypeToken<S> senderType;
 
         @Nullable
         private String permission;
         private String name;
         private ImmutableSet<String> aliases = ImmutableSet.of();
-        private CommandDispatcher<PlatformSender> commandDispatcher;
+        private CommandDispatcher commandDispatcher;
         private Lock lock;
 
         private Builder(TypeToken<S> senderType) {
             this.senderType = senderType;
         }
 
-        public Builder<S, PlatformSender> permission(String permission) {
+        public Builder<S> permission(String permission) {
             Preconditions.checkNotNull(permission);
             this.permission = permission.toLowerCase(Locale.ROOT);
             return this;
         }
 
-        public Builder<S, PlatformSender> name(String name) {
+        public Builder<S> name(String name) {
             this.name = name.toLowerCase(Locale.ROOT);
             return this;
         }
 
-        public Builder<S, PlatformSender> aliases(String... aliases) {
+        public Builder<S> aliases(String... aliases) {
             Preconditions.checkNotNull(aliases);
 
             for (int i = 0; i < aliases.length; i++) {
@@ -117,18 +117,18 @@ public final class CommandInfo<S extends Sender<PlatformSender>, PlatformSender>
             return this;
         }
 
-        public Builder<S, PlatformSender> commandDispatcher(CommandDispatcher<PlatformSender> commandDispatcher) {
+        public Builder<S> commandDispatcher(CommandDispatcher commandDispatcher) {
             Preconditions.checkNotNull(commandDispatcher);
             this.commandDispatcher = commandDispatcher;
             return this;
         }
 
-        public Builder<S, PlatformSender> lock(Lock lock) {
+        public Builder<S> lock(Lock lock) {
             this.lock = lock;
             return this;
         }
 
-        public CommandInfo<S, PlatformSender> build() {
+        public CommandInfo<S> build() {
             return new CommandInfo<>(
                     this.permission,
                     this.name,

@@ -8,7 +8,7 @@ import me.conclure.cityrp.common.command.commands.SetpositionCommand;
 import me.conclure.cityrp.common.command.dispatching.AsynchronousCommandDispatcher;
 import me.conclure.cityrp.common.command.dispatching.CommandDispatcher;
 import me.conclure.cityrp.common.command.dispatching.SimpleCommandDispatcher;
-import me.conclure.cityrp.common.command.repository.CommandRepository;
+import me.conclure.cityrp.common.command.repository.CommandRegistry;
 import me.conclure.cityrp.common.sender.Sender;
 import me.conclure.cityrp.common.sender.SenderTranformer;
 import me.conclure.cityrp.common.sender.SenderTransformRegistry;
@@ -22,7 +22,6 @@ import me.conclure.cityrp.common.data.position.PositionDataManager;
 import me.conclure.cityrp.common.model.position.PositionInfo;
 import me.conclure.cityrp.common.model.position.PositionRegistry;
 import me.conclure.cityrp.common.model.position.Positions;
-import me.conclure.cityrp.common.sender.SenderManager;
 import me.conclure.cityrp.common.utility.InventoryFactory;
 import me.conclure.cityrp.common.utility.Key;
 import me.conclure.cityrp.common.utility.MoreFiles;
@@ -30,7 +29,7 @@ import me.conclure.cityrp.common.utility.Permissions;
 import me.conclure.cityrp.common.utility.WorldObtainer;
 import me.conclure.cityrp.common.utility.concurrent.TaskCoordinator;
 import me.conclure.cityrp.common.utility.logging.Logger;
-import me.conclure.cityrp.paper.command.repository.BukkitCommandRepository;
+import me.conclure.cityrp.paper.command.repository.BukkitCommandRegistry;
 import me.conclure.cityrp.paper.gui.ItemRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.PositionRegistryGuiManager;
 import me.conclure.cityrp.paper.gui.ProfileGuiManager;
@@ -47,7 +46,6 @@ import me.conclure.cityrp.paper.position.BukkitPosition;
 import me.conclure.cityrp.paper.position.BukkitPositionRegistry;
 import me.conclure.cityrp.paper.sender.BukkitPlayerSender;
 import me.conclure.cityrp.paper.sender.BukkitSender;
-import me.conclure.cityrp.paper.sender.BukkitSenderManager;
 import me.conclure.cityrp.paper.utility.BukkitInventoryFactory;
 import me.conclure.cityrp.paper.utility.BukkitWorldObtainer;
 import me.conclure.cityrp.paper.utility.TypeTokens;
@@ -85,6 +83,8 @@ public class PaperLifecycle implements PluginLifecycle {
     private final ServicesManager servicesManager;
     private final BukkitScheduler bukkitScheduler;
 
+    private final BukkitAudiences bukkitAudiences;
+
     private final PathRegistry pathRegistry;
     private final Logger logger;
     private final TaskCoordinator<ExecutorService> taskCoordinator;
@@ -94,12 +94,11 @@ public class PaperLifecycle implements PluginLifecycle {
 
     private final ItemRepository<Material> itemRepository;
 
-    private final SenderManager<CommandSender> senderManager;
     private final SenderTransformRegistry senderTransformRegistry;
 
-    private final CommandDispatcher<CommandSender> commandDispatcher;
-    private final CommandDispatcher<CommandSender> asyncCommandDispatcher;
-    private CommandRepository<CommandSender> commandRepository;
+    private final CommandDispatcher commandDispatcher;
+    private final CommandDispatcher asyncCommandDispatcher;
+    private CommandRegistry commandRegistry;
 
     private PositionDataManager<Entity, World> positionDataManager;
     private PositionRegistry<Entity, World> positionRegistry;
@@ -130,16 +129,17 @@ public class PaperLifecycle implements PluginLifecycle {
         this.servicesManager = servicesManager;
         this.bukkitScheduler = bukkitScheduler;
 
+        this.bukkitAudiences = BukkitAudiences.create(this.plugin);
+
         this.pathRegistry = this.newPathRegistry();
         this.logger = this.newLogger();
 
         Thread.UncaughtExceptionHandler exceptionHandler = this.newExceptionHandler();
         ForkJoinPool forkJoinPool = this.newForkJoinPool(exceptionHandler);
 
-        this.senderManager = this.newSenderManager();
         this.senderTransformRegistry = new SimpleSenderTranformerRegistry.Builder()
-                .add(CommandSender.class,TypeTokens.SENDER_PLAYER,new BukkitSender.Transformer(this.senderManager))
-                .add(Player.class,TypeTokens.PLAYERSENDER_PLAYER,new BukkitPlayerSender.Tranformer(this.senderManager))
+                .add(CommandSender.class,TypeTokens.SENDER,new BukkitSender.Transformer(this.bukkitAudiences))
+                .add(Player.class,TypeTokens.PLAYERSENDER,new BukkitPlayerSender.Tranformer(this.bukkitAudiences))
                 .build();
 
 
@@ -196,20 +196,15 @@ public class PaperLifecycle implements PluginLifecycle {
         return new BukkitTaskCoordinator(this.plugin, this.bukkitScheduler);
     }
 
-    private CommandDispatcher<CommandSender> newCommandDispatcher(Logger logger) {
-        return new SimpleCommandDispatcher<>(logger);
+    private CommandDispatcher newCommandDispatcher(Logger logger) {
+        return new SimpleCommandDispatcher(logger);
     }
 
-    private CommandDispatcher<CommandSender> newAsynchronousCommandDispatcher(
+    private CommandDispatcher newAsynchronousCommandDispatcher(
             TaskCoordinator<? extends Executor> taskCoordinator,
-            CommandDispatcher<CommandSender> commandDispatcher
+            CommandDispatcher commandDispatcher
     ) {
-        return new AsynchronousCommandDispatcher<>(commandDispatcher, taskCoordinator);
-    }
-
-    private SenderManager<CommandSender> newSenderManager() {
-        BukkitAudiences audiences = BukkitAudiences.create(this.plugin);
-        return new BukkitSenderManager(audiences);
+        return new AsynchronousCommandDispatcher(commandDispatcher, taskCoordinator);
     }
 
     private void tryCreateDirectoriesIfNotExist() {
@@ -256,21 +251,21 @@ public class PaperLifecycle implements PluginLifecycle {
 
     private void setupCommands() {
 
-        SetpositionCommand<CommandSender> setpositionCommand = new SetpositionCommand<>(
-                CommandInfo.newBuilder(TypeTokens.PLAYERSENDER_COMMANDSENDER)
+        SetpositionCommand setpositionCommand = new SetpositionCommand(
+                CommandInfo.newBuilder(TypeTokens.PLAYERSENDER)
                         .aliases("testd")
                         .commandDispatcher(this.asyncCommandDispatcher)
                         .permission("crp.admin")
                         .build()
         );
 
-        SenderTranformer<CommandSender, Sender<? extends CommandSender>> senderConverter = this.senderTransformRegistry.get(CommandSender.class, TypeTokens.SENDER_PLAYER);
-        this.commandRepository = new BukkitCommandRepository.Builder()
+        SenderTranformer<CommandSender, Sender> senderConverter = this.senderTransformRegistry.get(CommandSender.class, TypeTokens.SENDER);
+        this.commandRegistry = new BukkitCommandRegistry.Builder()
                 .add(setpositionCommand)
                 .build(this.logger, this.pluginManager, this.plugin, senderConverter);
 
 
-        this.commandRepository.registerContainedCommands();
+        this.commandRegistry.registerContainedCommands();
     }
 
     private Stream<Listener> streamListeners() {
