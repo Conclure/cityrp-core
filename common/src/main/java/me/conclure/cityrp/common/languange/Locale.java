@@ -4,8 +4,14 @@ import me.conclure.cityrp.common.sender.Sender;
 import net.kyori.adventure.text.Component;
 
 import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY;
+import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 
+/**
+ * LuckPerms (MIT License)
+ *
+ * @author lucko
+ */
 public interface Locale {
     Component NEW_LINE = Component.newline();
     Component SPACE = Component.space();
@@ -25,6 +31,8 @@ public interface Locale {
             .build();
 
     NullComponent<Sender> FAILED_INITIAL_TELEPORTING = () -> text("Failed teleporting you.");
+
+    NullComponent<Sender> DATA_LOAD_ERROR = () -> text("Failed loading data.");
 
     @FunctionalInterface
     interface NullComponent<S extends Sender> {

@@ -7,8 +7,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SimpleCharacterRepository implements CharacterRepository {
-    private final Map<UUID, Map<UUID,Character>> characterCache;
-    private final Supplier<? extends Map<UUID,Character>> mapFactory;
+    private final Map<UUID, Map<UUID, Character>> characterCache;
+    private final Supplier<? extends Map<UUID, Character>> mapFactory;
 
     public SimpleCharacterRepository(
             Map<UUID, Map<UUID, Character>> characterCache,

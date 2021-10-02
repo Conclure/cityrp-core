@@ -13,9 +13,9 @@ public interface Character extends PlayerSender {
 
     String getName();
 
+    void setName(String name);
+
     default Component getNameComponent() {
         return Component.text(this.getName());
     }
-
-    void setName(String name);
 }

@@ -2,8 +2,6 @@ package me.conclure.cityrp.common.model.user;
 
 import me.conclure.cityrp.common.model.DelegatingPlayerSender;
 import me.conclure.cityrp.common.sender.PlayerSender;
-import me.conclure.cityrp.common.sender.SenderTranformer;
-import me.conclure.cityrp.common.utility.PlayerObtainer;
 
 import java.util.UUID;
 
@@ -19,6 +17,9 @@ public abstract class AbstractUser
     ) {
         this.uniqueId = uniqueId;
     }
+
+    @Override
+    protected abstract PlayerSender delegate();
 
     @Override
     public String getName() {

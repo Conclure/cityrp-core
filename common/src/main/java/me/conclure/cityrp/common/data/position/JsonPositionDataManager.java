@@ -4,9 +4,9 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.base.Preconditions;
 import me.conclure.cityrp.common.model.position.Position;
 import me.conclure.cityrp.common.model.position.PositionRegistry;
-import me.conclure.cityrp.common.utility.WorldObtainer;
 import me.conclure.cityrp.common.utility.CaffeineFactory;
 import me.conclure.cityrp.common.utility.ConfigurateLoaderFactory;
+import me.conclure.cityrp.common.utility.WorldObtainer;
 import me.conclure.cityrp.common.utility.concurrent.TaskCoordinator;
 import me.conclure.cityrp.common.utility.exception.RuntimeFileIOException;
 import org.spongepowered.configurate.BasicConfigurationNode;
@@ -19,9 +19,7 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
@@ -107,7 +105,7 @@ public class JsonPositionDataManager<PlatformEntity, PlatformWorld>
                     float yaw = node.node("yaw").getFloat();
                     float pitch = node.node("pitch").getFloat();
 
-                    position.configure(x,y,z,world,yaw,pitch);
+                    position.configure(x, y, z, world, yaw, pitch);
                 } finally {
                     lock.readLock().unlock();
                 }

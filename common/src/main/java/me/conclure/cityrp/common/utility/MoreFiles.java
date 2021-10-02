@@ -6,6 +6,11 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * LuckPerms (MIT License)
+ *
+ * @author lucko
+ */
 public final class MoreFiles extends Unconstructable {
 
     public static Path createFileIfNotExists(Path path) throws IOException {

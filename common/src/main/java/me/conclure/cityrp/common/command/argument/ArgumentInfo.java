@@ -72,7 +72,7 @@ public class ArgumentInfo {
         }
 
         public ArgumentInfo build() {
-            return new ArgumentInfo(this.isOptional,this.name,this.description);
+            return new ArgumentInfo(this.isOptional, this.name, this.description);
         }
     }
 }

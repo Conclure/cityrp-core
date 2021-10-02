@@ -1,7 +1,7 @@
 package me.conclure.cityrp.paper.sender;
 
 import me.conclure.cityrp.common.sender.PlayerSender;
-import me.conclure.cityrp.common.sender.SenderTranformer;
+import me.conclure.cityrp.common.sender.SenderTransformer;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -64,7 +64,7 @@ public class BukkitPlayerSender implements PlayerSender {
     }
 
     public static class Tranformer
-            implements SenderTranformer<Player,PlayerSender> {
+            implements SenderTransformer<Player, PlayerSender> {
         private final BukkitAudiences audiences;
 
         public Tranformer(BukkitAudiences audiences) {

@@ -2,9 +2,9 @@ package me.conclure.cityrp.common.sender;
 
 import com.google.common.reflect.TypeToken;
 
-public interface SenderTransformRegistry {
+public interface SenderTransformerRegistry {
 
-    <PlatformSender,S extends Sender> SenderTranformer<PlatformSender,S> get(
+    <PlatformSender, S extends Sender> SenderTransformer<PlatformSender, S> get(
             Class<PlatformSender> platformSenderType,
             TypeToken<S> senderTypeToken
     );

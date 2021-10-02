@@ -1,5 +1,10 @@
 package me.conclure.cityrp.common.utility.logging;
 
+/**
+ * LuckPerms (MIT License)
+ *
+ * @author lucko
+ */
 public interface Logger {
     void error(String msg);
 

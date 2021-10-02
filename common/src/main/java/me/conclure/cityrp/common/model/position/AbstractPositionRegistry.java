@@ -8,25 +8,25 @@ import java.util.stream.Stream;
 
 public abstract class AbstractPositionRegistry<PlatformEntity, PlatformWorld>
         implements PositionRegistry<PlatformEntity, PlatformWorld> {
-    private final ImmutableMap<Key,Position<PlatformEntity, PlatformWorld>> map;
-    private final ImmutableMap<Integer,Key> id2KeyMap;
-    private final ImmutableMap<Key,Integer> key2IdMap;
+    private final ImmutableMap<Key, Position<PlatformEntity, PlatformWorld>> map;
+    private final ImmutableMap<Integer, Key> id2KeyMap;
+    private final ImmutableMap<Key, Integer> key2IdMap;
 
     protected AbstractPositionRegistry(Stream<Position<PlatformEntity, PlatformWorld>> positions) {
-        ImmutableMap.Builder<Key,Position<PlatformEntity, PlatformWorld>> mapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Key, Position<PlatformEntity, PlatformWorld>> mapBuilder = ImmutableMap.builder();
 
-        positions.forEach(position -> mapBuilder.put(position.getKey(),position));
+        positions.forEach(position -> mapBuilder.put(position.getKey(), position));
 
         this.map = mapBuilder.build();
 
         int id = 0;
-        ImmutableMap.Builder<Integer,Key> id2KeyMapBuilder = ImmutableMap.builder();
-        ImmutableMap.Builder<Key,Integer> key2idMapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Integer, Key> id2KeyMapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<Key, Integer> key2idMapBuilder = ImmutableMap.builder();
 
         for (Key key : this.map.keySet()) {
             int currentId = id++;
-            id2KeyMapBuilder.put(currentId,key);
-            key2idMapBuilder.put(key,currentId);
+            id2KeyMapBuilder.put(currentId, key);
+            key2idMapBuilder.put(key, currentId);
         }
 
         this.id2KeyMap = id2KeyMapBuilder.build();

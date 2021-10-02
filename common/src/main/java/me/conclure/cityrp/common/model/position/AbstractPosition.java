@@ -5,9 +5,9 @@ import me.conclure.cityrp.common.utility.Key;
 
 public abstract class AbstractPosition<PlatformEntity, PlatformWorld>
         implements Position<PlatformEntity, PlatformWorld> {
-    private volatile LocationInfo locationInfo;
     private final Key key;
     private final PositionInfo info;
+    private volatile LocationInfo locationInfo;
 
     protected AbstractPosition(Key key, PositionInfo info) {
         this.key = key;
@@ -74,8 +74,9 @@ public abstract class AbstractPosition<PlatformEntity, PlatformWorld>
 
     @Override
     public void configure(double x, double y, double z, PlatformWorld world, float yaw, float pitch) {
-        this.locationInfo = new LocationInfo(x,y,z,this.parseWorldName(world),yaw,pitch);
+        this.locationInfo = new LocationInfo(x, y, z, this.parseWorldName(world), yaw, pitch);
     }
 
-    protected record LocationInfo(double x, double y, double z, String worldName, float yaw, float pitch) { }
+    protected record LocationInfo(double x, double y, double z, String worldName, float yaw, float pitch) {
+    }
 }

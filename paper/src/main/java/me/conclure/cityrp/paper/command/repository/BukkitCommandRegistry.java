@@ -5,7 +5,7 @@ import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.command.CommandInfo;
 import me.conclure.cityrp.common.command.repository.CommandRegistry;
 import me.conclure.cityrp.common.sender.Sender;
-import me.conclure.cityrp.common.sender.SenderTranformer;
+import me.conclure.cityrp.common.sender.SenderTransformer;
 import me.conclure.cityrp.common.utility.logging.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
@@ -23,16 +23,16 @@ public class BukkitCommandRegistry implements CommandRegistry {
     private final ImmutableMap<String, Command<? extends Sender>> aliasMap;
     private final Logger logger;
     private final Supplier<CommandInjector> commandInjector;
-    private final SenderTranformer<CommandSender, Sender> senderTranformer;
+    private final SenderTransformer<CommandSender, Sender> senderTransformer;
 
     public BukkitCommandRegistry(
             Logger logger,
             PluginManager pluginManager,
             Plugin plugin,
             Stream<Command<? extends Sender>> commands,
-            SenderTranformer<CommandSender, Sender> senderTranformer) {
+            SenderTransformer<CommandSender, Sender> senderTransformer) {
         this.logger = logger;
-        this.senderTranformer = senderTranformer;
+        this.senderTransformer = senderTransformer;
         ImmutableMap.Builder<String, Command<? extends Sender>> commandMapBuilder = ImmutableMap.builder();
         Map<String, Command<? extends Sender>> tempAliasMap = new HashMap<>();
         commands.forEach(command -> {
@@ -53,7 +53,7 @@ public class BukkitCommandRegistry implements CommandRegistry {
         });
         this.commandMap = commandMapBuilder.build();
         this.aliasMap = ImmutableMap.copyOf(tempAliasMap);
-        this.commandInjector = () -> new CommandInjector(pluginManager, plugin.getName(), this.senderTranformer);
+        this.commandInjector = () -> new CommandInjector(pluginManager, plugin.getName(), this.senderTransformer);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BukkitCommandRegistry implements CommandRegistry {
                 Logger logger,
                 PluginManager pluginManager,
                 Plugin plugin,
-                SenderTranformer<CommandSender, Sender> senderConverter
+                SenderTransformer<CommandSender, Sender> senderConverter
         ) {
             return new BukkitCommandRegistry(logger, pluginManager, plugin, this.commands.build(), senderConverter);
         }

@@ -186,7 +186,7 @@ public class Item {
     }
 
     public int getId() {
-        OptionalInt id = itemRepository.getId(this);
+        OptionalInt id = this.itemRepository.getId(this);
         Preconditions.checkArgument(id.isPresent());
         return id.getAsInt();
     }

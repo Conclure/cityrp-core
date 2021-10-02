@@ -10,14 +10,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class SubCommandArgument<C extends Command<S>,S extends Sender>
-        extends AbstractArgument<C,S, SubCommandArgument.Info<C,S>>{
-    public SubCommandArgument(SubCommandArgument.Info<C,S> info, Stream<C> stream) {
+public class SubCommandArgument<C extends Command<S>, S extends Sender>
+        extends AbstractArgument<C, S, SubCommandArgument.Info<C, S>> {
+    public SubCommandArgument(SubCommandArgument.Info<C, S> info, Stream<C> stream) {
         super(info);
 
         stream.forEach(command -> {
             String name = command.getInfo().getName();
-            this.getInfo().map.put(name,command);
+            this.getInfo().map.put(name, command);
         });
     }
 
@@ -28,16 +28,16 @@ public class SubCommandArgument<C extends Command<S>,S extends Sender>
 
         if (command == null) {
             return ArgumentParseResult.fail(sender -> {
-                sender.sendMessage(Component.text("Subcommand unrecognized: "+argument));
+                sender.sendMessage(Component.text("Subcommand unrecognized: " + argument));
             });
         }
 
         return ArgumentParseResult.success(command);
     }
 
-    public static class Info<C extends Command<S>,S extends Sender>
+    public static class Info<C extends Command<S>, S extends Sender>
             extends ArgumentInfo {
-        private final Map<String,C> map;
+        private final Map<String, C> map;
 
         protected Info(boolean isOptional, String name, Component description, Map<String, C> map) {
             super(isOptional, name, description);
@@ -45,36 +45,36 @@ public class SubCommandArgument<C extends Command<S>,S extends Sender>
         }
     }
 
-    public static class InfoBuilder<C extends Command<S>,S extends Sender>
+    public static class InfoBuilder<C extends Command<S>, S extends Sender>
             extends ArgumentInfo.Builder {
-        private Map<String,C> map = new HashMap<>();
+        private Map<String, C> map = new HashMap<>();
 
         @Override
-        public InfoBuilder<C,S> description(Component description) {
+        public InfoBuilder<C, S> description(Component description) {
             super.description(description);
             return this;
         }
 
         @Override
-        public InfoBuilder<C,S> name(String name) {
+        public InfoBuilder<C, S> name(String name) {
             super.name(name);
             return this;
         }
 
         @Override
-        public InfoBuilder<C,S> optional(boolean optional) {
+        public InfoBuilder<C, S> optional(boolean optional) {
             super.optional(optional);
             return this;
         }
 
-        public InfoBuilder<C,S> mapImplementation(Map<String, C> map) {
+        public InfoBuilder<C, S> mapImplementation(Map<String, C> map) {
             this.map = map;
             return this;
         }
 
         @Override
-        public Info<C,S> build() {
-            return new Info<>(this.isOptional(),this.name(),this.description(),this.map);
+        public Info<C, S> build() {
+            return new Info<>(this.isOptional(), this.name(), this.description(), this.map);
         }
     }
 }

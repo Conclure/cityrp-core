@@ -1,7 +1,7 @@
 package me.conclure.cityrp.paper.sender;
 
 import me.conclure.cityrp.common.sender.Sender;
-import me.conclure.cityrp.common.sender.SenderTranformer;
+import me.conclure.cityrp.common.sender.SenderTransformer;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -24,7 +24,7 @@ public class BukkitSender<BukkitPlatformSender extends CommandSender> implements
         return this.sender.hasPermission(permission);
     }
 
-    public static class Transformer implements SenderTranformer<CommandSender,Sender> {
+    public static class Transformer implements SenderTransformer<CommandSender, Sender> {
         private final BukkitAudiences audiences;
 
         public Transformer(BukkitAudiences audiences) {

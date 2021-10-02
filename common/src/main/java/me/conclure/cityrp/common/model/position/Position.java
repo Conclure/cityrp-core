@@ -33,7 +33,7 @@ public interface Position<PlatformEntity, PlatformWorld> {
     void configure(double x, double y, double z, PlatformWorld world, float yaw, float pitch);
 
     default void configure(double x, double y, double z, PlatformWorld world) {
-        this.configure(x,y,z,world,0f,0f);
+        this.configure(x, y, z, world, 0f, 0f);
     }
 
     CompletableFuture<Boolean> teleportAsync(PlatformEntity entity);

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import me.conclure.cityrp.common.command.Command;
 import me.conclure.cityrp.common.command.dispatching.CommandDispatcher;
 import me.conclure.cityrp.common.sender.Sender;
-import me.conclure.cityrp.common.sender.SenderTranformer;
+import me.conclure.cityrp.common.sender.SenderTransformer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.PluginManager;
@@ -17,10 +17,10 @@ import java.util.List;
 final class CommandInjector {
     final SimpleCommandMap commandMap;
     final String fallbackPrefix;
-    final SenderTranformer<CommandSender, Sender> senderTranformer;
+    final SenderTransformer<CommandSender, Sender> senderTransformer;
 
-    CommandInjector(PluginManager pluginManager, String fallbackPrefix, SenderTranformer<CommandSender, Sender> senderTranformer) {
-        this.senderTranformer = senderTranformer;
+    CommandInjector(PluginManager pluginManager, String fallbackPrefix, SenderTransformer<CommandSender, Sender> senderTransformer) {
+        this.senderTransformer = senderTransformer;
         Preconditions.checkNotNull(pluginManager);
         Preconditions.checkArgument(pluginManager instanceof SimplePluginManager);
         Preconditions.checkNotNull(fallbackPrefix);
@@ -68,7 +68,7 @@ final class CommandInjector {
         @Override
         public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
             CommandDispatcher dispatcher = this.command.getInfo().getCommandDispatcher();
-            Sender sender = CommandInjector.this.senderTranformer.tranform(commandSender);
+            Sender sender = CommandInjector.this.senderTransformer.tranform(commandSender);
 
             dispatcher.dispatch(this.command, sender, strings);
             return true;

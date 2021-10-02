@@ -27,6 +27,22 @@ public final class Key {
         return KEY_POOL.get(key);
     }
 
+    public static Key[] fetchStaticKeys(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields())
+                .peek(field -> field.setAccessible(true))
+                .filter(field -> Modifier.isStatic(field.getModifiers()))
+                .map(field -> {
+                    try {
+                        return field.get(null);
+                    } catch (IllegalAccessException e) {
+                        return null;
+                    }
+                })
+                .filter(Key.class::isInstance)
+                .map(Key.class::cast)
+                .toArray(Key[]::new);
+    }
+
     @Override
     public String toString() {
         return this.key;
@@ -42,22 +58,6 @@ public final class Key {
     @Override
     public int hashCode() {
         return this.key.hashCode();
-    }
-
-    public static Key[] fetchStaticKeys(Class<?> clazz) {
-        return Arrays.stream(clazz.getDeclaredFields())
-                .peek(field -> field.setAccessible(true))
-                .filter(field -> Modifier.isStatic(field.getModifiers()))
-                .map(field -> {
-                    try {
-                        return field.get(null);
-                    } catch (IllegalAccessException e) {
-                        return null;
-                    }
-                })
-                .filter(Key.class::isInstance)
-                .map(Key.class::cast)
-                .toArray(Key[]::new);
     }
 
     static class KeyPool {

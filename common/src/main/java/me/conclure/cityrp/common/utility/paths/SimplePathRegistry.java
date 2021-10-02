@@ -32,10 +32,10 @@ public class SimplePathRegistry implements PathRegistry {
     }
 
     public static class Builder {
-        private ImmutableMap.Builder<Key,Path> map;
+        private ImmutableMap.Builder<Key, Path> map;
 
         public Builder add(Key key, Path path) {
-            map.put(key,path);
+            this.map.put(key, path);
             return this;
         }
 

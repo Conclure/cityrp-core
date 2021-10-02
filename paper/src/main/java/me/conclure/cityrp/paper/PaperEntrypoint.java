@@ -1,6 +1,7 @@
 package me.conclure.cityrp.paper;
 
 import me.conclure.cityrp.common.plugin.PluginLifecycle;
+import me.conclure.cityrp.common.utility.concurrent.AwaitableLatch;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
@@ -17,14 +18,16 @@ import org.bukkit.scoreboard.ScoreboardManager;
 @ApiVersion(ApiVersion.Target.v1_16)
 public class PaperEntrypoint extends JavaPlugin {
     private final PluginLifecycle lifecycle;
+    private final AwaitableLatch enableLatch;
 
     public PaperEntrypoint() {
+        this.enableLatch = new AwaitableLatch();
         Server server = this.getServer();
         PluginManager pluginManager = server.getPluginManager();
         ScoreboardManager scoreboardManager = server.getScoreboardManager();
         ServicesManager servicesManager = server.getServicesManager();
         BukkitScheduler scheduler = server.getScheduler();
-        this.lifecycle = new PaperLifecycle(this, server, pluginManager, scoreboardManager, servicesManager, scheduler);
+        this.lifecycle = new PaperLifecycle(this.enableLatch, this, server, pluginManager, scoreboardManager, servicesManager, scheduler);
     }
 
     @Override
@@ -34,7 +37,13 @@ public class PaperEntrypoint extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.lifecycle.enable();
+        try {
+            this.lifecycle.enable();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.enableLatch.release();
+        }
     }
 
     @Override

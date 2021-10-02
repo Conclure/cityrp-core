@@ -1,10 +1,12 @@
 package me.conclure.cityrp.common.model.user;
 
+import com.google.common.collect.UnmodifiableIterator;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.nullness.Nullable;
 
 import java.util.UUID;
 
-public interface UserRepository {
+public interface UserRepository extends Iterable<User> {
 
     @Nullable
     User getIfPresent(UUID uniqueId);
@@ -19,9 +21,13 @@ public interface UserRepository {
         return this.contains(user.getUniqueId());
     }
 
-    User unload(UUID uniqueId);
+    User discard(UUID uniqueId);
 
-    default boolean unload(User user) {
-        return this.unload(user.getUniqueId()) != null;
+    default boolean discard(User user) {
+        return this.discard(user.getUniqueId()) != null;
     }
+
+    @NotNull
+    @Override
+    UnmodifiableIterator<User> iterator();
 }
